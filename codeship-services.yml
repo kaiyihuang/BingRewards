@@ -12,6 +12,8 @@ services:
     environment:
       fprocess: /bin/entry.sh
     encrypted_env_file: env.encrypted
+    cmd: python -m compileall /bin/test
+
   bing:
     build:
         image: kenney/bingreward
