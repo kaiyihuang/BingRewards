@@ -995,6 +995,14 @@ class TestLong(unittest.TestCase):
         classobj.progressMax = 0
         self.assertIsNotNone(classobj.progressPercentage(), "should not be None")
 
+        if isinstance(classobj, bdp.Reward):
+            with open("test/openhtml", "r") as fd:
+                DASHPG = fd.readlines()
+                DASHPG = "".join(DASHPG)
+                cleanup = DASHPG.replace('\\n', ' ').replace('\r', '')
+                DASHPG = "".join(cleanup)
+                self.assertRaisesRegexp(AttributeError, 'NoneType', bdp.parseDashboardPage, DASHPG, bingCommon.ACCOUNT_URL)
+
     @patch('bingFlyoutParser.RewardV1.progressPercentage', return_value="100")
     @patch('helpers.getResponseBody')
     def test_rewards_search(self, helpmock, permock):
