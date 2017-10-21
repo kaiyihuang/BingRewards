@@ -533,27 +533,6 @@ NONIF2 = """
     </configuration>
             """
 
-NONIFRHS = """
-    <configuration>
-        <general />
-        <accounts>
-            <account type="Live" disabled="false">
-                <login>ms@ps.com</login>
-                <password>zzz</password>
-            </account>
-        </accounts>
-        <events>
-            <onComplete>
-                <notify if="%l gt adfsdf" cmd="echo complete %a %p %r %P %l %i" />
-                <account ref="Live_ms@ps.com">
-                    <retry if="%p lt 31" interval="5" salt="3.5" count="1" />
-                </account>
-            </onComplete>
-        </events>
-        <queries generator="googleTrends" />
-    </configuration>
-            """
-
 NONIFOP = """
     <configuration>
         <general />
@@ -565,9 +544,9 @@ NONIFOP = """
         </accounts>
         <events>
             <onComplete>
-                <notify if="%l gt adfsdf" cmd="echo complete %a %p %r %P %l %i" />
+                <notify if="%l zt 1" cmd="echo complete %a %p %r %P %l %i" />
                 <account ref="Live_ms@ps.com">
-                    <retry if="%p zt 0.001" interval="5" salt="3.5" count="1" />
+                    <retry if="%p zt 1" interval="5" salt="3.5" count="1" />
                 </account>
             </onComplete>
         </events>
@@ -782,6 +761,9 @@ class TestConfig(unittest.TestCase):
 
     def test_stringify(self):
         self.assertRaisesRegexp(ValueError, "too small", stringify, None, -1)
+        ri = BingRewardsReportItem()
+        ri.accountLogin = "dontcare"
+        self.assertIsNotNone(stringify(ri, 4), "should return string")
 
     @patch('urllib2.Request', return_value="")
     @patch('helpers.getResponseBody', return_value="")
@@ -860,9 +842,8 @@ class TestConfig(unittest.TestCase):
         self.assertRaisesRegexp(ConfigError, "MUST BE", self.config.parseFromString, NEGRETRYCNT)
 
     def test_config_if(self):
-        self.assertRaisesRegexp(ConfigError, "is invalid", self.config.parseFromString, NONIF2)
-        self.assertRaisesRegexp(ConfigError, "is invalid", self.config.parseFromString, NONIFRHS)
-        self.assertRaisesRegexp(ConfigError, "is invalid", self.config.parseFromString, NONIFOP)
+        self.assertRaisesRegexp(ConfigError, "consist of three parts", self.config.parseFromString, NONIF2)
+        self.assertRaisesRegexp(ConfigError, "_op_ is not valid", self.config.parseFromString, NONIFOP)
 
     def test_event(self):
         """
@@ -1173,6 +1154,7 @@ class TestLong(unittest.TestCase):
         :return:
         """
         reward.process(rewards, True)
+        self.assertTrue(mockqueries.called > 0, "called")
 
     @patch('helpers.getResponseBody', new=Mock(side_effect = [PAGE, ""]))
     def _search_noresult(self, reward, rewards):
@@ -1181,7 +1163,6 @@ class TestLong(unittest.TestCase):
         :return:
         """
         reward.process(rewards, True)
-
 
 class TestBDP(unittest.TestCase):
     """
