@@ -867,7 +867,7 @@ class TestConfig(unittest.TestCase):
     def test_config_if(self):
         self.assertRaisesRegexp(ConfigError, "consist of three parts", self.config.parseFromString, NONIF2)
         self.assertRaisesRegexp(ConfigError, "consist of three parts", self.config.parseFromString, NONIFVAL)
-    self.assertRaisesRegexp(ConfigError, "_op_ is not valid", self.config.parseFromString, NONIFOP)
+        self.assertRaisesRegexp(ConfigError, "_op_ is not valid", self.config.parseFromString, NONIFOP)
 
     def test_event(self):
         """
