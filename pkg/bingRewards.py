@@ -274,8 +274,7 @@ class BingRewards:
             print "Running mobile searches"
             print
         else:
-            res.isError = True
-            res.message = "Don't know how to process this search"
+            res.isError, res.message = True, "Don't know how to process this search"  
             return res
 
         if verbose:
