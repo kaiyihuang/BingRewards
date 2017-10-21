@@ -533,6 +533,29 @@ NONIF2 = """
     </configuration>
             """
 
+NONIFVAL = """
+    <configuration>
+        <general />
+        <accounts>
+            <account type="Live" disabled="false">
+                <login>ms@ps.com</login>
+                <password>zzz</password>
+            </account>
+        </accounts>
+
+        <events>
+            <onComplete>
+                <retry if="%p lt 0.1" interval="5" salt="3.5" count="1" />
+                <account ref="Live_ms@ps.com">
+                    <retry if="%p lt 31" interval="5" salt="3.5" count="1" />
+                </account>
+
+            </onComplete>
+        </events>
+        <queries generator="googleTrends" />
+    </configuration>
+            """
+
 NONIFOP = """
     <configuration>
         <general />
@@ -843,7 +866,8 @@ class TestConfig(unittest.TestCase):
 
     def test_config_if(self):
         self.assertRaisesRegexp(ConfigError, "consist of three parts", self.config.parseFromString, NONIF2)
-        self.assertRaisesRegexp(ConfigError, "_op_ is not valid", self.config.parseFromString, NONIFOP)
+        self.assertRaisesRegexp(ConfigError, "consist of three parts", self.config.parseFromString, NONIFVAL)
+    self.assertRaisesRegexp(ConfigError, "_op_ is not valid", self.config.parseFromString, NONIFOP)
 
     def test_event(self):
         """
