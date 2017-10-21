@@ -1023,6 +1023,13 @@ class TestLong(unittest.TestCase):
         q.br = None
         q.unusedQueries = set()
         self.assertIsNotNone(q.generateQueries(10, set()))
+        self.assertRaisesRegexp(ValueError, "be more than 0", q.generateQueries, 0, set())
+        self.assertRaisesRegexp(ValueError, "history is not", q.generateQueries, 1, None)
+        self.assertRaisesRegexp(ValueError, "empty", self._query_blank, q)
+
+    @patch('helpers.getResponseBody', return_value = "")
+    def _query_blank(self, q, mockhelp):
+        q.generateQueries(1, set())
 
     @patch("googleTrends.queryGenerator", new=Mock(side_effect= ImportError()))
     def _query_failure(self, reward, rewards):
