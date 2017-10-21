@@ -292,8 +292,8 @@ class BingRewards:
         queries = queryGenerator.generateQueries(searchesCount, history)
 
         if len(queries) < searchesCount:
-            print "Warning: not enough queries to run were generated!\nRequested: {%s}\nGenerated: {%s}\n" \
-                                   .format(searchesCount, len(queries))
+            print "Warning: not enough queries to run were generated!\nRequested: {}\nGenerated: {}\n"\
+                        .format(searchesCount, len(queries))
 
         successfullQueries = 0
         i = 1
@@ -318,7 +318,7 @@ class BingRewards:
                  or page.find(BING_QUERY_SUCCESSFULL_RESULT_MARKER_MOBILE) != -1
 
             if not found:
-                print "Warning! Query:\n\t {%s}\n returned no results, check file for more information".format(query, helpers.dumpErrorPage(page))
+                print "Warning! Query:\n\t {}\n returned no results, check file for more information {}".format(query, helpers.dumpErrorPage(page))
 
 
             else:

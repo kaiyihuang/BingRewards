@@ -906,6 +906,18 @@ class TestConfig(unittest.TestCase):
         self._rewards_hit(bfp.RewardV1())
         self._rewards_hit(bdp.Reward())
 
+    @patch('helpers.getResponseBody', return_value = "")
+    def _blank_reward(self, reward, mockhelp):
+        reward.getRewardsPoints()
+
+    BAN = """
+          t.innerHTML='Rewards'
+        """
+
+    @patch('helpers.getResponseBody', return_value = BAN)
+    def _ban_reward(self, reward, mockhelp):
+        reward.getRewardsPoints()
+
     @patch('helpers.getResponseBody')
     def _rewards_hit(self, classobj, helpmock):
         """
@@ -930,6 +942,9 @@ class TestConfig(unittest.TestCase):
         page = "t.innerHTML='100'"
         helpmock.return_value = page
         self.assertIsNotNone(reward.getRewardsPoints(), "should not be None")
+        self.assertRaisesRegexp(Exception, "is empty", self._blank_reward, reward)
+        self.assertIsNone(self._ban_reward(reward), "should be None or 0")
+
         self.assertRaisesRegexp(TypeError, "not an instance", reward.process, None, True)
 
         # NONE case
@@ -1004,6 +1019,7 @@ class TestLong(unittest.TestCase):
     def setUp(self):
         self.config = Config()
         self.config.parseFromString(XMLString)
+        self.needCall = True
 
     def test_query(self):
         """
@@ -1138,12 +1154,33 @@ class TestLong(unittest.TestCase):
             newbfp.isAchieved = lambda: data is False
             self.assertIsNotNone(reward.process(rewards, True), "should return res")
 
+            if self.needCall:
+                # print negative queries
+                self._query_negative(reward, rewards)
+                self._search_noresult(reward, rewards)
+                self.needCall = False
+
         newbfp.isDone = True
-        print reward.queryGenerator
         self.assertIsNotNone(reward.process(rewards, True), "should return res")
 
         self.config.proxy = None
         BingRewards(bingCommon.HEADERS, useragents, self.config)
+
+    @patch("googleTrends.queryGenerator.generateQueries", return_value = [])
+    def _query_negative(self, reward, rewards, mockqueries):
+        """
+        test import failure of queryGenerator
+        :return:
+        """
+        reward.process(rewards, True)
+
+    @patch('helpers.getResponseBody', new=Mock(side_effect = [PAGE, ""]))
+    def _search_noresult(self, reward, rewards):
+        """
+        test import failure of queryGenerator
+        :return:
+        """
+        reward.process(rewards, True)
 
 
 class TestBDP(unittest.TestCase):
@@ -1154,7 +1191,6 @@ class TestBDP(unittest.TestCase):
     def setUp(self):
         self.config = Config()
         self.configXMLString = XMLString
-
         self.config.parseFromString(self.configXMLString)
 
     @patch('bingDashboardParser.Reward.progressPercentage', return_value="100")
