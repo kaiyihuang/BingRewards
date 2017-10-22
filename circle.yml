@@ -34,8 +34,8 @@ test:
     - coverage run -p --branch test/configtest.py
     - coverage run -p --branch test/rewardtest.py
     # workaround for branch issue
-    - coverage combine --debug=sys; coverage combine --debug=sys
-    - coverage combine
+    - coverage combine --debug=sys || /bin/true
+    - coverage combine --debug=sys || /bin/true
 
   post:
     - rm -f config.xml
