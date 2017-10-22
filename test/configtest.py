@@ -1157,7 +1157,7 @@ class TestLong(unittest.TestCase):
             newbfp.Type = bfp.RewardV1.Type.Action.SEARCH
             rewards = [newbfp]
             newbfp.isAchieved = lambda: data is False
-            self.assertIsNotNone(reward.process(rewards, True), "should return res")
+            self.assertIsNotNone(reward.process(rewards, self.needCall), "should return res")
 
             if self.needCall:
                 # print negative queries

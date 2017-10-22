@@ -273,9 +273,6 @@ class BingRewards:
             print
             print "Running mobile searches"
             print
-        else:
-            res.isError, res.message = True, "Don't know how to process this search"  
-            return res
 
         if verbose:
             print("User-Agent: {0}".format(bingCommon.HEADERS["User-Agent"]))
