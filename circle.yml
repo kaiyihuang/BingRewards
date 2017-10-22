@@ -29,11 +29,11 @@ test:
     - mv .coverage .coverage.1
     # need more loving from circleci coverage plugin
     - coverage run -p main.py -v -r
-    - coverage run -p --branch test/configtest.py
-    - coverage run -p --branch test/rewardtest.py
     - ls -aRl .coverage*
     # combine with two processes running coverage seems broken
     - coverage combine
+    - coverage run -p --branch test/configtest.py
+    - coverage run -p --branch test/rewardtest.py
 
   post:
     - rm -f config.xml
