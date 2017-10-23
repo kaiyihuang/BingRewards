@@ -32,15 +32,14 @@ test:
     # combine with two processes running coverage seems broken
     - coverage run -p --branch test/configtest.py
     - ls -aRl .coverage*
-    - mv .coverage .coverage.2
     - coverage run -p --branch test/rewardtest.py
     - ls -aRl .coverage*
-    - mv .coverage .coverage.3
     # workaround for branch issue
     - coverage combine --debug=sys || /bin/true
     - ls -aRl .coverage*
     - coverage combine --debug=sys || /bin/true
     - ls -aRl .coverage*
+    - coverage combine
 
   post:
     - rm -f config.xml
