@@ -33,9 +33,7 @@ test:
     - coverage run -p --branch test/configtest.py
     - coverage run -p --branch test/rewardtest.py
     # workaround for branch issue arc issue
-    - coverage combine --debug=sys,trace || /bin/true
-    - coverage combine --debug=sys,trace || /bin/true
-    - coverage combine --debug=sys,trace || /bin/true
+    - while ! coverage combine --debug=sys,trace; do echo "#"; done
     - ls .c*
 
   post:
