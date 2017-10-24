@@ -26,7 +26,7 @@ test:
     # https://github.com/dlanger/nose-parallel
     - nosetests -v  --processes=4 --process-timeout=120 --with-coverage --cover-package queryGenerators --cover-package pkg --cover-package test --cover-package . --cover-package pkg/queryGenerators test/*.py:
           parallel: false
-    - mv .coverage .coverage.1
+    - cp .coverage .coverage.1 .coverage1
     # need more loving from circleci coverage plugin
     - coverage run -p main.py -v -r
     # combine with two processes running coverage seems broken
@@ -34,6 +34,7 @@ test:
     - coverage report --omit '/home/ubuntu/*/*/*/*,/usr/*,mpmain.py'
     - coverage run -p --branch test/rewardtest.py
     - coverage run -p --branch test/configtest.py
+    - mv .coverage1 .coverage.1
     # workaround for branch issue arc issue
     - while ! coverage combine --debug=sys,trace; do echo "#"; done
     - ls .c*
