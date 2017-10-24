@@ -136,6 +136,68 @@ WIKIString = """
     </configuration>
             """
 
+EVXML = """
+    <configuration>
+        <general />
+
+        <accounts>
+            <account type="Facebook" disabled="false">
+                <login>john.smith@gmail.com</login>
+                <password>xxx</password>
+            </account>
+        </accounts>
+
+        <events>
+            <onScriptComplete>
+                <invalid if="%p lt 16" interval="5" salt="3.5" count="1" />
+                <notify cmd="./mail.sh" />
+            </onScriptComplete>
+        </events>
+    </configuration>
+            """
+
+NOTXML = """
+    <configuration>
+        <general />
+
+        <accounts>
+            <account type="Facebook" disabled="false">
+                <login>john.smith@gmail.com</login>
+                <password>xxx</password>
+            </account>
+        </accounts>
+
+        <events>
+            <onScriptComplete>
+                <notify  />
+            </onScriptComplete>
+        </events>
+    </configuration>
+            """
+
+NOACCNTXML = """
+    <configuration>
+        <general />
+
+        <accounts>
+            <account type="Facebook" disabled="false">
+                <login>john.smith@gmail.com</login>
+                <password>xxx</password>
+            </account>
+        </accounts>
+
+        <events>
+            <onComplete>
+                <account ref="Facebook_john.smith@gmail.xxx">
+                    <retry if="%p lt 31" interval="5" salt="3.5" count="1" />
+                    <notify if="%l gt 10000" cmd="echo complete %a %p %r %P %l %i" />
+                </account>
+            </onComplete>
+        </events>
+        <queries generator="wikipedia" />
+    </configuration>
+            """
+
 FBXML = """
     <configuration>
         <general
@@ -844,6 +906,9 @@ class TestConfig(unittest.TestCase):
         self.assertRaisesRegexp(ConfigError, "should be either set", self.config.parseFromString, PROXYLOGINXML)
         self.assertRaisesRegexp(KeyError, "_specifier_ is not", validateSpecifier, "%not")
         self.assertRaisesRegexp(ConfigError, "Invalid subnode", self.config.parseFromString, FBXML)
+        self.assertRaisesRegexp(ConfigError, "Invalid subnode", self.config.parseFromString, EVXML)
+        self.assertRaisesRegexp(ConfigError, "EVENTS.NOTIFY.cmd is not found", self.config.parseFromString, NOTXML)
+        self.assertRaisesRegexp(ConfigError, "Corresponding account is not found", self.config.parseFromString, NOACCNTXML)
 
     def test_config_attr(self):
         self.assertRaisesRegexp(ConfigError, "MUST", self.config.parseFromString, FLOAT)
@@ -882,6 +947,7 @@ class TestConfig(unittest.TestCase):
         self.assertIsNone(EventsProcessor.onScriptComplete(self.config), "should be none")
         ep = EventsProcessor(self.config, BingRewardsReportItem())
         self.assertIsNotNone(ep.processReportItem(), "should not be none and be done")
+        self.assertRaisesRegexp(TypeError, "not of AccountKey", self.config.getEvent, "", True)
 
     @patch('main.earnRewards', return_value=None)
     @patch('eventsProcessor.EventsProcessor.processReportItem', return_value=(-1, None))
