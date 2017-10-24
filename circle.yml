@@ -31,15 +31,10 @@ test:
     - coverage run -p main.py -v -r
     # combine with two processes running coverage seems broken
     - coverage run -p --branch test/configtest.py
-    - ls -aRl .coverage*
     - coverage run -p --branch test/rewardtest.py
-    - ls -aRl .coverage*
-    # workaround for branch issue
-    - coverage combine --debug=sys || /bin/true
-    - ls -aRl .coverage*
-    - coverage combine --debug=sys || /bin/true
-    - ls -aRl .coverage*
-    - coverage combine
+    # workaround for branch issue arc issue
+    - coverage combine --debug=sys,trace || /bin/true
+    - coverage combine --debug=sys,trace || /bin/true
 
   post:
     - rm -f config.xml
