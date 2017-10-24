@@ -32,7 +32,7 @@ test:
     # need loving for nosetest to run without arc issue
     - ls .c*
     - coverage erase
-    - nosetests -v  --processes=4 --process-timeout=120 --with-coverage --cover-package queryGenerators --cover-package pkg --cover-package test --cover-package . --cover-package pkg/queryGenerators test/*.py:
+    - nosetests -v  --processes=4 --process-timeout=200 --with-coverage --cover-package pkg --cover-package pkg/queryGenerators --cover-package test --cover-package . --cover-package pkg/queryGenerators test/*.py:
           parallel: false
     - cp .coverage .coverage.1
     # need more loving from circleci coverage plugin
