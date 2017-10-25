@@ -29,6 +29,7 @@ test:
     # workaround for branch issue arc issue
     - while ! coverage combine --debug=sys,trace; do echo "#"; done
     - coverage report --omit '/home/ubuntu/*/*/*/*,/usr/*,mpmain.py'
+    - coveralls --rcfile=.coveragerc
     # need loving for nosetest to run without arc issue
     - ls .c*
     - coverage erase
