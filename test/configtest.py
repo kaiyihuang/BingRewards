@@ -1222,7 +1222,14 @@ class TestLong(unittest.TestCase):
 
             newbfp.Type = bfp.RewardV1.Type.Action.SEARCH
             rewards = [newbfp]
-            newbfp.isAchieved = lambda: data is False
+
+            if self.needCall:
+                newbfp.openLinkChance = True
+                newbfp.isAchieved = lambda: data is False
+            else:
+                newbfp.openLinkChance = False
+                newbfp.isAchieved = lambda: data is True
+
             self.assertIsNotNone(reward.process(rewards, self.needCall), "should return res")
 
             if self.needCall:
