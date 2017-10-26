@@ -25,6 +25,7 @@ import bingHistory
 import bingFlyoutParser as bfp
 import bingDashboardParser as bdp
 import bingAuth
+from bingAuth import AuthenticationError
 from config import Config
 from config import BingRewardsReportItem
 from eventsProcessor import EventsProcessor
@@ -641,6 +642,11 @@ NONIFOP = """
 
 DASHPG = ""
 
+
+def get_response():
+    return urllib2.urlopen('http://www.google.com')
+
+
 def validateSpecifier(specifier, specifierType=None):
     spec = Config.Event.Specifier()
     return spec._Specifier__validateSpecifier(specifier, specifierType=None)
@@ -850,10 +856,9 @@ class TestConfig(unittest.TestCase):
         ri.accountLogin = "dontcare"
         self.assertIsNotNone(stringify(ri, 4), "should return string")
 
-    @patch('urllib2.Request', return_value="")
     @patch('helpers.getResponseBody', return_value="")
     @patch('urllib2.Request.add_header', return_value=urllib2.Request(bingCommon.BING_URL, bingCommon.HEADERS))
-    def test_auth_url(self, headermock, helpmock, urlmock):
+    def test_auth_url(self, headermock, helpmock):
         """
         test auth class
         :param headermock:
@@ -865,6 +870,27 @@ class TestConfig(unittest.TestCase):
 
         auth = bingAuth.BingAuth(bingCommon.HEADERS, urllib2.OpenerDirector())
         self.assertIsNotNone(auth, "should return class")
+
+    def test_auth_searchWin(self):
+        run(self.config)
+        #self.assertRaisesRegexp(AssertionError, "Could not find variable 'WindowsLiveId'", run, self.config)
+
+    @patch('urllib2.OpenerDirector.open', return_value =get_response())
+    @patch('helpers.getResponseBody', return_value='"WindowsLiveId":""     "WindowsLiveId":""')
+    def test_auth_searchPPFT(self, mhelp, murl):
+        run(self.config)
+
+    @patch('urllib2.OpenerDirector.open', return_value=get_response())
+    @patch('helpers.getResponseBody', new=Mock(side_effect=['"WindowsLiveId":""     "WindowsLiveId":""',
+                                                            "sFTTag:' value=\"1\""]))
+    def test_auth_searchPassportRN(self, mhelp):
+        run(self.config)
+
+    @patch('urllib2.OpenerDirector.open', return_value=get_response())
+    @patch('helpers.getResponseBody', new=Mock(side_effect=['"WindowsLiveId":""     "WindowsLiveId":""' +
+                                                            "sFTTag:' value=\"1\" :'PassportRN'", ""]))
+    def test_auth_searchUrlPost(self, mhelp):
+        run(self.config)
 
     def test_config(self):
         """
