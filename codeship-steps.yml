@@ -30,7 +30,7 @@
     - name: unittests
       command: bash -c "cd /usr/src/app; nosetests -v --processes=4 --process-timeout=120 test/*.py"
     - name: decrypt and run
-      command: bash -c 'env; cd /usr/src/app; openssl aes-256-cbc -d -in config.xml.encrypted -k ${KEY} -out config.xml; python mpmain.py 4 config.xml'
+      command: bash -c 'env; cd /usr/src/app; openssl aes-256-cbc -d -in config.xml.encrypted.1 -k ${KEY} -out config.xml; python mpmain.py 4 config.xml'
 
 #  - name: Test dockercfg Generator
 #    service: dockercfg_test
