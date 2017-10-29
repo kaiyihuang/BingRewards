@@ -73,23 +73,28 @@ Vagrant.configure(2) do |config|
 
   # http://activelamp.com/blog/devops/local-docker-development-with-vagrant/
   config.vm.provision "shell", inline: <<-SHELL
-    KEY="ENTERYOURS"
     apt-get update
     apt-get install -y python-pip
-    pip2.7 install --upgrade pip
+    . ~/.bashrc
+    pip install --upgrade pip
     cd /vagrant
     coverage erase
     cp config.xml.dist config.xml
     chmod og-r config.xml
-    pip2.7 install -r requirements.txt
-    pip2.7 install -r test/requirements.txt
+    pip install -r requirements.txt
+    pip install -r test/requirements.txt
+
+    # branch coverage tests
     coverage run -p --branch test/rewardtest.py
     coverage run -p --branch test/configtest.py
     # workaround for branch issue arc issue insert here
     while ! coverage combine --debug=trace; do echo "#"; sleep 1; done
     coverage report --omit '/home/ubuntu/*/*/*/*,/usr/*,mpmain.py'
     coverage erase
-    nosetests -v  --processes=4 --process-timeout=200 --with-coverage --cover-package pkg --cover-package pkg/queryGenerators --cover-package test --cover-package . --cover-package pkg/queryGenerators test/*.py
+
+    # line coverage test
+    nosetests -v  --processes=4 --process-timeout=200 --with-coverage --cover-package pkg --cover-package \
+        pkg/queryGenerators --cover-package test --cover-package . --cover-package pkg/queryGenerators test/*.py
     coverage report --omit '/home/ubuntu/*/*/*/*,/usr/*,mpmain.py'
   SHELL
 end
