@@ -1,3 +1,4 @@
 [run]
+omit = /usr/local/lib/*
 concurrency = multiprocessing
 parallel = True

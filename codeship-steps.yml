@@ -28,7 +28,7 @@
     - name: clean
       command: coverage erase
     - name: unittests
-      command: bash -c "cd /usr/src/app && nosetests -v --processes=4 --process-timeout=120 --with-coverage --cover-package pkg --cover-package test --cover-package . test/*.py && coverage combine && coverage report && coveralls"
+      command: bash -c "cd /usr/src/app && nosetests -v --processes=4 --process-timeout=120 --with-coverage --cover-package pkg --cover-package test --cover-package . test/*.py && coverage combine && coverage report && coveralls --rcfile=.coveragerc"
 
 
 #  - name: Test dockercfg Generator
