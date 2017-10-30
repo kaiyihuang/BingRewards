@@ -1,4 +1,3 @@
 [run]
-omit = /home/ubuntu/*/*/*/*,/usr/*,mpmain.py
 concurrency = multiprocessing
 parallel = True
