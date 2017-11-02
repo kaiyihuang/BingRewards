@@ -139,7 +139,7 @@ def parseDashboardPage(page, bing_url):
         descriptionDiv = ddiv.find('div', class_='spacer-12-top')
         if descriptionDiv is not None:
             rewardDescription = descriptionDiv.get_text()
-        createReward(currentReward, rewardURL, rewardName, rewardProgressCurrent, rewardProgressMax, rewardDescription)
+        (currentReward, rewardURL, rewardName, rewardProgressCurrent, rewardProgressMax, rewardDescription)
         allRewards.append(currentReward)
 
     # Get the rewards on the main dashboard page
@@ -236,10 +236,10 @@ def checkForHit(currAction, rewardProgressCurrent, rewardProgressMax, searchLink
 
 def createReward(reward, rUrl, rName, rPC, rPM, rDesc):
     reward.url = rUrl.strip()
-    reward.name = rName.strip()
+    reward.name = rName.strip().encode('latin-1', 'ignore')
     reward.progressCurrent = rPC
     reward.progressMax = rPM
-    reward.description = rDesc.strip()
+    reward.description = rDesc.strip().encode('latin-1', 'ignore')
     if rPC == rPM:
         reward.isDone = True
 
