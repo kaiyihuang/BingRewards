@@ -171,8 +171,8 @@ def parseDashboardPage(page, bing_url):
                                                   class_='offer-description-height spacer-20-top offer-description-margin-bottom')
                 # if the reward is a quiz and fully complete
         if rewardDescription.get_text().find('You did it!') != -1:
-            rDscSplit=rewardDescription.get_text().replace('\n', '').split(' ')
-            rewardProgressCurrent = rewardProgressMax = int(rDscSplit[rDscSplit.index('points.') - 1].replace(',',''))
+            rDscSplit=rewardDescription.get_text().split(' ')
+            rewardProgressCurrent = rewardProgressMax = int(rDscSplit[rDscSplit.index('points.') - 1])
             # Grab the point totals for 'HIT' rewards - we're using these as a marker to set the 'HIT' type
         hits = checkForHit(currAction, rewardProgressCurrent, rewardProgressMax, links[i])
         if hits is not None:
@@ -236,10 +236,10 @@ def checkForHit(currAction, rewardProgressCurrent, rewardProgressMax, searchLink
 
 def createReward(reward, rUrl, rName, rPC, rPM, rDesc):
     reward.url = rUrl.strip()
-    reward.name = rName.strip()
+    reward.name = rName.strip().encode('latin-1', 'ignore')
     reward.progressCurrent = rPC
     reward.progressMax = rPM
-    reward.description = rDesc.strip()
+    reward.description = rDesc.strip().encode('latin-1', 'ignore')
     if rPC == rPM:
         reward.isDone = True
 
