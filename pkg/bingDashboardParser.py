@@ -236,10 +236,10 @@ def checkForHit(currAction, rewardProgressCurrent, rewardProgressMax, searchLink
 
 def createReward(reward, rUrl, rName, rPC, rPM, rDesc):
     reward.url = rUrl.strip()
-    reward.name = rName.strip().encode('latin-1', 'ignore')
+    reward.name = rName.strip()
     reward.progressCurrent = rPC
     reward.progressMax = rPM
-    reward.description = rDesc.strip().encode('latin-1', 'ignore')
+    reward.description = rDesc.strip()
     if rPC == rPM:
         reward.isDone = True
 
