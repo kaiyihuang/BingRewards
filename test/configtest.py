@@ -24,6 +24,7 @@ import bingCommon
 import bingHistory
 import bingFlyoutParser as bfp
 import bingDashboardParser as bdp
+from bs4 import BeautifulSoup
 import bingAuth
 from bingAuth import AuthenticationError
 from config import Config
@@ -1100,7 +1101,8 @@ PAGE = """
         value= "0" NAP value="0"
         ANON value="0"
         id="t" value="0"
-        <div> 999 livetime points</div>
+        <div>100 10 10 points.<a href="https://www.w3schools.com"> a </a>
+        </div>
         t.innerHTML='100'
         <div id="b_content">
         <div id="content">
@@ -1287,15 +1289,34 @@ class TestLong(unittest.TestCase):
         """
         reward.process(rewards, True)
 
+
+PSOUP = BeautifulSoup(
+    PAGE.replace("&#8212;", "").replace("&#10005;", "").replace("&#169;", "").replace("\u2022", "").replace(
+        "\u2013", "").replace("\u2019", ""), 'html.parser').find('div')
+
+
 class TestBDP(unittest.TestCase):
     """
     Test that takes near 30s
     """
 
+
     def setUp(self):
         self.config = Config()
         self.configXMLString = XMLString
         self.config.parseFromString(self.configXMLString)
+
+    @patch('bs4.element.Tag.get', return_value = str(PSOUP))
+    @patch('bs4.element.Tag.find', return_value = PSOUP)
+    @patch('bingDashboardParser.foundText', new=Mock(side_effect=[True, False]))
+    def test_bdp_quiz_full(self, mocksoap, mockget):
+        bdp.appendQuizReward([], bingCommon.ACCOUNT_URL, PSOUP)
+
+    @patch('bs4.element.Tag.get', return_value = str(PSOUP))
+    @patch('bs4.element.Tag.find', new=Mock(side_effect=[PSOUP, PSOUP, None, PSOUP, PSOUP, PSOUP]))
+    @patch('bingDashboardParser.foundText', new=Mock(side_effect=[True, False]))
+    def test_bdp_quiz_partial(self, mockget):
+        bdp.appendQuizReward([], bingCommon.ACCOUNT_URL, PSOUP)
 
     @patch('bingDashboardParser.Reward.progressPercentage', return_value="100")
     @patch('helpers.getResponseBody')
