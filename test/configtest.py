@@ -4,6 +4,7 @@ import unittest
 import sys
 import os
 import errno
+import re
 
 sys.path.append(os.path.abspath("pkg"))
 sys.path.append(os.path.abspath("."))
@@ -1306,7 +1307,6 @@ class TestBDP(unittest.TestCase):
     Test that takes near 30s
     """
 
-
     def setUp(self):
         self.config = Config()
         self.configXMLString = XMLString
@@ -1316,6 +1316,11 @@ class TestBDP(unittest.TestCase):
         useragents = bingCommon.UserAgents().generate(self.config.accounts)
         bp = BingRewards(bingCommon.HEADERS, useragents, self.config)
         self.assertIsNotNone(processSearch(bp, True), "Should return res")
+
+        IG_PING_LINK = "http://www.bing.com/fd/ls/GLinkPing.aspx"
+        IG_NUMBER_PATTERN = re.compile(r'IG:"([^"]+)"')
+        IG_SEARCHES_PATTERN = re.compile(r'<li\s[^>]*class="b_algo"[^>]*><h2><a\s[^>]*href="(http[^"]+)"\s[^>]*h="([^"]+)"')
+        bp.randomClick(IG_NUMBER_PATTERN, IG_PING_LINK, IG_SEARCHES_PATTERN, "", None, True)
 
     @patch('bs4.element.Tag.get', return_value = str(PSOUP))
     @patch('bs4.element.Tag.find', return_value = PSOUP)
