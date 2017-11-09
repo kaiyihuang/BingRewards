@@ -666,6 +666,12 @@ def processAccount(config):
     return main.__processAccount(config, None, None, bp, "")
 
 
+def processSearch(br, verbose):
+    newbdp = bdp.Reward()
+    newbdp.isAchieved = lambda: True
+    return br._BingRewards__processSearch(newbdp, verbose)
+
+
 class TestConfig(unittest.TestCase):
     fsock = None
     mockdate = "2017-09-06 00:44:47.7"
@@ -1305,6 +1311,11 @@ class TestBDP(unittest.TestCase):
         self.config = Config()
         self.configXMLString = XMLString
         self.config.parseFromString(self.configXMLString)
+
+    def test_achieved(self):
+        useragents = bingCommon.UserAgents().generate(self.config.accounts)
+        bp = BingRewards(bingCommon.HEADERS, useragents, self.config)
+        self.assertIsNotNone(processSearch(bp, True), "Should return res")
 
     @patch('bs4.element.Tag.get', return_value = str(PSOUP))
     @patch('bs4.element.Tag.find', return_value = PSOUP)
