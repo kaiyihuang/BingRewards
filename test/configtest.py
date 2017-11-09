@@ -673,6 +673,14 @@ def processSearch(br, verbose):
     return br._BingRewards__processSearch(newbdp, verbose)
 
 
+def parseResultsArea1(bh):
+    return bh.__parseResultsArea1('<span class="query_t">')
+
+
+def parseResultsArea2(bh):
+    return bh.__parseResultsArea2('<span class="sh_item_qu_query">')
+
+
 class TestConfig(unittest.TestCase):
     fsock = None
     mockdate = "2017-09-06 00:44:47.7"
@@ -823,6 +831,11 @@ class TestConfig(unittest.TestCase):
 
         output = bingHistory.getBingHistoryTodayURL()
         self.assertRegexpMatches(output, "https", "missing url " + str(output))
+
+        # check type err
+        self.assertRaisesRegexp(TypeError, "not supported", parseResultsArea1, bingHistory)
+        self.assertRaisesRegexp(TypeError, "not supported", parseResultsArea2, bingHistory)
+
 
     @patch('helpers.getResponseBody', return_value='"WindowsLiveId":""     "WindowsLiveId":""')
     @patch('time.sleep', return_value='')
