@@ -1,20 +1,42 @@
 # initial checkin
-- name: example_tagged_step
-  tag: master
-  service: codeship_example
-  command: pip install -r requirements.txt  
-  service: codeship_example
-  command: cp config.xml.dist config.xml 
-  #service: codeship_example
-  #command: python -B test/*py
-  #service: codeship_example
-  #command: coverage report
-  #service: codeship_example
-  #command:  coveralls
-- type: parallel
-  name: example_parallel_step
+- name: bing serial
+  type: serial
+  tags: master
+  services:
+    - bing
+    - bing-test
   steps:
-    - service: codeship_example
+    - name: setup
       command: env
-    - service: codeship_example
-      command: ls -al 
+    - name: health tests
+      type: parallel
+      steps:
+        - name: file detections
+          type: parallel
+          steps:
+            - name: files
+              command: ls -al /usr/src/app
+            - name: main test
+              command: python /usr/src/app/main.py -h
+
+# jet steps --debug
+- name: container tests
+  type: serial
+  tags: tests
+  service: bing-test
+  steps:
+    - name: decrypt and run
+      command: bash -c "cd /src; openssl aes-256-cbc -d -in config.xml.encrypted.1 -k ${KEY} -out config.xml"
+    - name: unittests
+      command: bash -c "cd /src && nosetests -v --processes=4 --process-timeout=120 --with-coverage --cover-package pkg --cover-package test --cover-package . test/*.py"
+    - name: reports
+      command: bash -c "cd /src; mv .coverage .coverage.1 && coverage run -p ./mpmain.py 4 config.xml"
+    - name: coveralls
+      command: bash -c "cd /src; coverage combine && coverage report && coveralls --rcfile=/usr/src/app/.coveragerc"
+
+#  - name: Test dockercfg Generator
+#    service: dockercfg_test
+#    type: push
+#    image_name: 870119404647.dkr.ecr.us-east-1.amazonaws.com/codeship-testing
+#    registry: https://870119404647.dkr.ecr.us-east-1.amazonaws.com
+#    dockercfg_service: dockercfg_test_generator

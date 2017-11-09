@@ -4,7 +4,6 @@ import unittest
 import sys
 import os
 import errno
-import re
 
 sys.path.append(os.path.abspath("pkg"))
 sys.path.append(os.path.abspath("."))
@@ -25,9 +24,7 @@ import bingCommon
 import bingHistory
 import bingFlyoutParser as bfp
 import bingDashboardParser as bdp
-from bs4 import BeautifulSoup
 import bingAuth
-from bingAuth import AuthenticationError
 from config import Config
 from config import BingRewardsReportItem
 from eventsProcessor import EventsProcessor
@@ -88,119 +85,6 @@ XMLString = """
         <queries generator="googleTrends" />
     </configuration>
             """
-
-WIKIString = """
-    <configuration>
-        <general
-            betweenQueriesInterval="12.271"
-            betweenQueriesSalt="5.7"
-            betweenAccountsInterval="404.1"
-            betweenAccountsSalt="40.52" />
-
-        <accounts>
-            <account type="Live" disabled="false">
-                <login>ms@ps.com</login>
-                <password>zzz</password>
-                <ua_desktop>Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.10136</ua_desktop>
-                <ua_mobile>mozilla/5.0 (iphone; cpu iphone os 7_0_2 like mac os x) applewebkit/537.51.1 (khtml, like gecko) version/7.0 mobile/11a501 safari/9537.53</ua_mobile>
-            </account>
-        </accounts>
-        <proxy protocols="http"
-               url="www.bing.com"
-               login="xxx"
-               password="yyy" />
-        <events>
-            <onError>
-                <retry interval="5" salt="3.5" count="1" />
-                <notify cmd="echo error %a %p %r %l %i" />
-            </onError>
-            <onComplete>
-                <retry if="%p lt 16" interval="5" salt="3.5" count="1" />
-                <notify if="%l gt 3000" cmd="echo complete %a %p %r %P %l %i" />
-                <notify if="%p ne 16" cmd="echo complete %a %p %r %P %l %i" />
-                <notify if="%P gt 475" cmd="echo complete %a %p %r %P %l %i" />
-
-                <account ref="Live_ms@ps.com">
-                    <retry if="%p lt 31" interval="5" salt="3.5" count="1" />
-                    <notify if="%l gt 10000" cmd="echo complete %a %p %r %P %l %i" />
-                    <notify if="%p ne 31" cmd="echo complete %a %p %r %P %l %i" />
-                    <notify if="%P gt 475" cmd="echo complete %a %p %r %P %l %i" />
-                </account>
-
-            </onComplete>
-            <onScriptComplete>
-                <notify cmd="echo" />
-            </onScriptComplete>
-            <onScriptFailure>
-                <notify cmd="echo" />
-            </onScriptFailure>
-        </events>
-        <queries generator="wikipedia" />
-    </configuration>
-            """
-
-EVXML = """
-    <configuration>
-        <general />
-
-        <accounts>
-            <account type="Facebook" disabled="false">
-                <login>john.smith@gmail.com</login>
-                <password>xxx</password>
-            </account>
-        </accounts>
-
-        <events>
-            <onScriptComplete>
-                <invalid if="%p lt 16" interval="5" salt="3.5" count="1" />
-                <notify cmd="./mail.sh" />
-            </onScriptComplete>
-        </events>
-    </configuration>
-            """
-
-NOTXML = """
-    <configuration>
-        <general />
-
-        <accounts>
-            <account type="Facebook" disabled="false">
-                <login>john.smith@gmail.com</login>
-                <password>xxx</password>
-            </account>
-        </accounts>
-
-        <events>
-            <onScriptComplete>
-                <notify  />
-            </onScriptComplete>
-        </events>
-    </configuration>
-            """
-
-NOACCNTXML = """
-    <configuration>
-        <general />
-
-        <accounts>
-            <account type="Facebook" disabled="false">
-                <login>john.smith@gmail.com</login>
-                <password>xxx</password>
-            </account>
-        </accounts>
-
-        <events>
-            <onComplete>
-                <account ref="Facebook_john.smith@gmail.xxx">
-                    <retry if="%p lt 31" interval="5" salt="3.5" count="1" />
-                    <notify if="%l gt 10000" cmd="echo complete %a %p %r %P %l %i" />
-                </account>
-            </onComplete>
-        </events>
-        <queries generator="wikipedia" />
-    </configuration>
-            """
-
 FBXML = """
     <configuration>
         <general
@@ -289,9 +173,11 @@ NONACCREF = """
                 </account>
             </onComplete>
             <onScriptComplete>
+                <invalidretry if="%p lt 16" interval="5" salt="3.5" count="1" />
                 <notify cmd="./mail.sh" />
             </onScriptComplete>
             <onScriptFailure>
+                <invalidretry if="%p lt 16" interval="5" salt="3.5" count="1" />
                 <notify cmd="./onScriptFailure.sh" />
             </onScriptFailure>
         </events>
@@ -598,7 +484,7 @@ NONIF2 = """
     </configuration>
             """
 
-NONIFVAL = """
+NONIFRHS = """
     <configuration>
         <general />
         <accounts>
@@ -607,14 +493,12 @@ NONIFVAL = """
                 <password>zzz</password>
             </account>
         </accounts>
-
         <events>
             <onComplete>
-                <retry if="%p lt 0.1" interval="5" salt="3.5" count="1" />
+                <notify if="%l gt adfsdf" cmd="echo complete %a %p %r %P %l %i" />
                 <account ref="Live_ms@ps.com">
                     <retry if="%p lt 31" interval="5" salt="3.5" count="1" />
                 </account>
-
             </onComplete>
         </events>
         <queries generator="googleTrends" />
@@ -632,9 +516,9 @@ NONIFOP = """
         </accounts>
         <events>
             <onComplete>
-                <notify if="%l zt 1" cmd="echo complete %a %p %r %P %l %i" />
+                <notify if="%l gt adfsdf" cmd="echo complete %a %p %r %P %l %i" />
                 <account ref="Live_ms@ps.com">
-                    <retry if="%p zt 1" interval="5" salt="3.5" count="1" />
+                    <retry if="%p zt 0.001" interval="5" salt="3.5" count="1" />
                 </account>
             </onComplete>
         </events>
@@ -643,11 +527,6 @@ NONIFOP = """
             """
 
 DASHPG = ""
-
-
-def get_response():
-    return urllib2.urlopen('http://www.google.com')
-
 
 def validateSpecifier(specifier, specifierType=None):
     spec = Config.Event.Specifier()
@@ -665,20 +544,6 @@ def stringify(report_item, len):
 def processAccount(config):
     bp = BingRewardsReportItem()
     return main.__processAccount(config, None, None, bp, "")
-
-
-def processSearch(br, verbose):
-    newbdp = bdp.Reward()
-    newbdp.isAchieved = lambda: True
-    return br._BingRewards__processSearch(newbdp, verbose)
-
-
-def parseResultsArea1(bh):
-    return bh.__parseResultsArea1('<span class="query_t">')
-
-
-def parseResultsArea2(bh):
-    return bh.__parseResultsArea2('<span class="sh_item_qu_query">')
 
 
 class TestConfig(unittest.TestCase):
@@ -832,11 +697,6 @@ class TestConfig(unittest.TestCase):
         output = bingHistory.getBingHistoryTodayURL()
         self.assertRegexpMatches(output, "https", "missing url " + str(output))
 
-        # check type err
-        self.assertRaisesRegexp(TypeError, "not supported", parseResultsArea1, bingHistory)
-        self.assertRaisesRegexp(TypeError, "not supported", parseResultsArea2, bingHistory)
-
-
     @patch('helpers.getResponseBody', return_value='"WindowsLiveId":""     "WindowsLiveId":""')
     @patch('time.sleep', return_value='')
     def test_auth_url(self, timemock, helpmock):  # pragma: no cover
@@ -873,13 +733,11 @@ class TestConfig(unittest.TestCase):
 
     def test_stringify(self):
         self.assertRaisesRegexp(ValueError, "too small", stringify, None, -1)
-        ri = BingRewardsReportItem()
-        ri.accountLogin = "dontcare"
-        self.assertIsNotNone(stringify(ri, 4), "should return string")
 
+    @patch('urllib2.Request', return_value="")
     @patch('helpers.getResponseBody', return_value="")
     @patch('urllib2.Request.add_header', return_value=urllib2.Request(bingCommon.BING_URL, bingCommon.HEADERS))
-    def test_auth_url(self, headermock, helpmock):
+    def test_auth_url(self, headermock, helpmock, urlmock):
         """
         test auth class
         :param headermock:
@@ -891,27 +749,6 @@ class TestConfig(unittest.TestCase):
 
         auth = bingAuth.BingAuth(bingCommon.HEADERS, urllib2.OpenerDirector())
         self.assertIsNotNone(auth, "should return class")
-
-    def test_auth_searchWin(self):
-        run(self.config)
-        #self.assertRaisesRegexp(AssertionError, "Could not find variable 'WindowsLiveId'", run, self.config)
-
-    @patch('urllib2.OpenerDirector.open', return_value =get_response())
-    @patch('helpers.getResponseBody', return_value='"WindowsLiveId":""     "WindowsLiveId":""')
-    def test_auth_searchPPFT(self, mhelp, murl):
-        run(self.config)
-
-    @patch('urllib2.OpenerDirector.open', return_value=get_response())
-    @patch('helpers.getResponseBody', new=Mock(side_effect=['"WindowsLiveId":""     "WindowsLiveId":""',
-                                                            "sFTTag:' value=\"1\""]))
-    def test_auth_searchPassportRN(self, mhelp):
-        run(self.config)
-
-    @patch('urllib2.OpenerDirector.open', return_value=get_response())
-    @patch('helpers.getResponseBody', new=Mock(side_effect=['"WindowsLiveId":""     "WindowsLiveId":""' +
-                                                            "sFTTag:' value=\"1\" :'PassportRN'", ""]))
-    def test_auth_searchUrlPost(self, mhelp):
-        run(self.config)
 
     def test_config(self):
         """
@@ -953,9 +790,6 @@ class TestConfig(unittest.TestCase):
         self.assertRaisesRegexp(ConfigError, "should be either set", self.config.parseFromString, PROXYLOGINXML)
         self.assertRaisesRegexp(KeyError, "_specifier_ is not", validateSpecifier, "%not")
         self.assertRaisesRegexp(ConfigError, "Invalid subnode", self.config.parseFromString, FBXML)
-        self.assertRaisesRegexp(ConfigError, "Invalid subnode", self.config.parseFromString, EVXML)
-        self.assertRaisesRegexp(ConfigError, "EVENTS.NOTIFY.cmd is not found", self.config.parseFromString, NOTXML)
-        self.assertRaisesRegexp(ConfigError, "Corresponding account is not found", self.config.parseFromString, NOACCNTXML)
 
     def test_config_attr(self):
         self.assertRaisesRegexp(ConfigError, "MUST", self.config.parseFromString, FLOAT)
@@ -977,9 +811,9 @@ class TestConfig(unittest.TestCase):
         self.assertRaisesRegexp(ConfigError, "MUST BE", self.config.parseFromString, NEGRETRYCNT)
 
     def test_config_if(self):
-        self.assertRaisesRegexp(ConfigError, "consist of three parts", self.config.parseFromString, NONIF2)
-        self.assertRaisesRegexp(ConfigError, "_rhs_ can not be parsed as int", self.config.parseFromString, NONIFVAL)
-        self.assertRaisesRegexp(ConfigError, "_op_ is not valid", self.config.parseFromString, NONIFOP)
+        self.assertRaisesRegexp(ConfigError, "is invalid", self.config.parseFromString, NONIF2)
+        self.assertRaisesRegexp(ConfigError, "is invalid", self.config.parseFromString, NONIFRHS)
+        self.assertRaisesRegexp(ConfigError, "is invalid", self.config.parseFromString, NONIFOP)
 
     def test_event(self):
         """
@@ -994,7 +828,6 @@ class TestConfig(unittest.TestCase):
         self.assertIsNone(EventsProcessor.onScriptComplete(self.config), "should be none")
         ep = EventsProcessor(self.config, BingRewardsReportItem())
         self.assertIsNotNone(ep.processReportItem(), "should not be none and be done")
-        self.assertRaisesRegexp(TypeError, "not of AccountKey", self.config.getEvent, "", True)
 
     @patch('main.earnRewards', return_value=None)
     @patch('eventsProcessor.EventsProcessor.processReportItem', return_value=(-1, None))
@@ -1024,18 +857,6 @@ class TestConfig(unittest.TestCase):
         self._rewards_hit(bfp.RewardV1())
         self._rewards_hit(bdp.Reward())
 
-    @patch('helpers.getResponseBody', return_value = "")
-    def _blank_reward(self, reward, mockhelp):
-        reward.getRewardsPoints()
-
-    BAN = """
-          t.innerHTML='Rewards'
-        """
-
-    @patch('helpers.getResponseBody', return_value = BAN)
-    def _ban_reward(self, reward, mockhelp):
-        reward.getRewardsPoints()
-
     @patch('helpers.getResponseBody')
     def _rewards_hit(self, classobj, helpmock):
         """
@@ -1060,9 +881,6 @@ class TestConfig(unittest.TestCase):
         page = "t.innerHTML='100'"
         helpmock.return_value = page
         self.assertIsNotNone(reward.getRewardsPoints(), "should not be None")
-        self.assertRaisesRegexp(Exception, "is empty", self._blank_reward, reward)
-        self.assertIsNone(self._ban_reward(reward), "should be None or 0")
-
         self.assertRaisesRegexp(TypeError, "not an instance", reward.process, None, True)
 
         # NONE case
@@ -1115,20 +933,6 @@ class TestConfig(unittest.TestCase):
         self.assertRaisesRegexp(ConfigError, "not found", self.config.parseFromString, PROTXML)
         self.assertRaisesRegexp(ConfigError, "not found", self.config.parseFromString, URLXML)
 
-PAGE = """
-        "WindowsLiveId":""     "WindowsLiveId":""
-        action="0" value="0"
-        value= "0" NAP value="0"
-        ANON value="0"
-        id="t" value="0"
-        <div>100 10 10 points.<a href="https://www.w3schools.com"> a </a>
-        </div>
-        t.innerHTML='100'
-        <div id="b_content">
-        <div id="content">
-        IG:"100"
-        http://www.bing.com/fd/ls/GLinkPing.aspx
-        """
 
 class TestLong(unittest.TestCase):
     """
@@ -1137,14 +941,20 @@ class TestLong(unittest.TestCase):
 
     def setUp(self):
         self.config = Config()
-        self.config.parseFromString(XMLString)
-        self.needCall = True
+        self.configXMLString = XMLString
+
+        self.config.parseFromString(self.configXMLString)
 
     def test_query(self):
         """
-        test queryGenerator
+        test google queryGenerator
         :return:
         """
+        q = googleTrends.queryGenerator(1)
+        q.br = None
+        q.unusedQueries = set()
+        self.assertIsNotNone(q.generateQueries(10, set()))
+
         self.assertRaisesRegexp(ValueError, "is not", wikipedia.queryGenerator, None)
         useragents = bingCommon.UserAgents().generate(self.config.accounts)
 
@@ -1158,21 +968,6 @@ class TestLong(unittest.TestCase):
         q.br = None
         q.unusedQueries = set()
         self.assertIsNotNone(q.generateQueries(10, set()))
-        self.assertRaisesRegexp(ValueError, "be more than 0", q.generateQueries, 0, set())
-        self.assertRaisesRegexp(ValueError, "history is not", q.generateQueries, 1, None)
-        self.assertRaisesRegexp(ValueError, "empty", self._query_blank, q)
-
-    @patch('helpers.getResponseBody', return_value = "")
-    def _query_blank(self, q, mockhelp):
-        q.generateQueries(1, set())
-
-    @patch("googleTrends.queryGenerator", new=Mock(side_effect= ImportError()))
-    def _query_failure(self, reward, rewards):
-        """
-        test import failure of queryGenerator
-        :return:
-        """
-        reward.process(rewards, True)
 
     def test_bingparser(self):
         self._bp(bfp.RewardV1())
@@ -1202,16 +997,8 @@ class TestLong(unittest.TestCase):
         classobj.progressMax = 0
         self.assertIsNotNone(classobj.progressPercentage(), "should not be None")
 
-        if isinstance(classobj, bdp.Reward):
-            with open("test/openhtml", "r") as fd:
-                DASHPG = fd.readlines()
-                DASHPG = "".join(DASHPG)
-                cleanup = DASHPG.replace('\\n', ' ').replace('\r', '')
-                DASHPG = "".join(cleanup)
-                self.assertRaisesRegexp(AttributeError, 'NoneType', bdp.parseDashboardPage, DASHPG, bingCommon.ACCOUNT_URL)
-
     @patch('bingFlyoutParser.RewardV1.progressPercentage', return_value="100")
-    @patch('helpers.getResponseBody', return_value = PAGE)
+    @patch('helpers.getResponseBody')
     def test_rewards_search(self, helpmock, permock):
         """
         Search rewards string
@@ -1219,34 +1006,29 @@ class TestLong(unittest.TestCase):
         :param permock:
         :return:
         """
-        self._search()
-        self.config = Config()
-        self.config.parseFromString(WIKIString)
-        self._search()
+        page = '"WindowsLiveId":""     "WindowsLiveId":"" '
+        page += 'action="0" value="0" '
+        page += 'value= "0" NAP value="0" '
+        page += 'ANON value="0" '
+        page += 'id="t" value="0" '
+        page += '<div> 999 livetime points</div> '
+        page += "t.innerHTML='100'"
+        page += '<div id="b_content">'
+        page += '<div id="content">'
+        page += 'IG:"100"'
+        page += "http://www.bing.com/fd/ls/GLinkPing.aspx"
 
-    def _search(self):
+        helpmock.return_value = page
+
         useragents = bingCommon.UserAgents().generate(self.config.accounts)
         reward = BingRewards(bingCommon.HEADERS, useragents, self.config)
         newbfp = bfp.RewardV1()
-
-        newbfp.Type = bfp.RewardV1.Type.Action.SEARCH
         reward.RewardResult(newbfp)
 
-        newbfp.progressCurrent, newbfp.progressMax, newbfp.description = 1, 100,\
-                                                                         "Up to 10 points today, 10 points per search"
-        newbfp.isDone = False
-        rewards = [newbfp]
-        newbfp.tp = bfp.RewardV1.Type.SEARCH_MOBILE
-        if reward.queryGenerator == "googleTrends":
-            self.assertRaisesRegexp(TypeError, "not a module", self._query_failure, reward, rewards)
-        else:
-            self.assertRaisesRegexp(ValueError, "is empty", self._query_failure, reward, rewards)
-            return
+        newbfp.progressCurrent = 1
+        newbfp.progressMax = 100
+        newbfp.description = "Up to 10 points today, 10 points per search"
 
-        newbfp = bfp.RewardV1()
-        reward.RewardResult(newbfp)
-        newbfp.progressCurrent, newbfp.progressMax, newbfp.description = 1, 100, \
-                                                                         "Up to 10 points today, 10 points per search"
         newbfp.isDone = False
 
         # SEARCH case, PC, Mobile, Earn
@@ -1270,49 +1052,16 @@ class TestLong(unittest.TestCase):
 
             newbfp.Type = bfp.RewardV1.Type.Action.SEARCH
             rewards = [newbfp]
-
-            if self.needCall:
-                newbfp.openLinkChance = True
-                newbfp.isAchieved = lambda: data is False
-            else:
-                newbfp.openLinkChance = False
-                newbfp.isAchieved = lambda: data is True
-
-            self.assertIsNotNone(reward.process(rewards, self.needCall), "should return res")
-
-            if self.needCall:
-                # print negative queries
-                self._query_negative(reward, rewards)
-                self._search_noresult(reward, rewards)
-                self.needCall = False
-
+            newbfp.isAchieved = lambda: data is False
+            try:
+                self.assertIsNotNone(reward.process(rewards, True), "should return res")
+            except HTTPError, e:
+                print "can return HTTPError", str(e)
         newbfp.isDone = True
         self.assertIsNotNone(reward.process(rewards, True), "should return res")
 
         self.config.proxy = None
         BingRewards(bingCommon.HEADERS, useragents, self.config)
-
-    @patch("googleTrends.queryGenerator.generateQueries", return_value = [])
-    def _query_negative(self, reward, rewards, mockqueries):
-        """
-        test import failure of queryGenerator
-        :return:
-        """
-        reward.process(rewards, True)
-        self.assertTrue(mockqueries.called > 0, "called")
-
-    @patch('helpers.getResponseBody', new=Mock(side_effect = [PAGE, ""]))
-    def _search_noresult(self, reward, rewards):
-        """
-        test import failure of queryGenerator
-        :return:
-        """
-        reward.process(rewards, True)
-
-
-PSOUP = BeautifulSoup(
-    PAGE.replace("&#8212;", "").replace("&#10005;", "").replace("&#169;", "").replace("\u2022", "").replace(
-        "\u2013", "").replace("\u2019", ""), 'html.parser').find('div')
 
 
 class TestBDP(unittest.TestCase):
@@ -1323,29 +1072,8 @@ class TestBDP(unittest.TestCase):
     def setUp(self):
         self.config = Config()
         self.configXMLString = XMLString
+
         self.config.parseFromString(self.configXMLString)
-
-    def test_achieved(self):
-        useragents = bingCommon.UserAgents().generate(self.config.accounts)
-        bp = BingRewards(bingCommon.HEADERS, useragents, self.config)
-        self.assertIsNotNone(processSearch(bp, True), "Should return res")
-
-        IG_PING_LINK = "http://www.bing.com/fd/ls/GLinkPing.aspx"
-        IG_NUMBER_PATTERN = re.compile(r'IG:"([^"]+)"')
-        IG_SEARCHES_PATTERN = re.compile(r'<li\s[^>]*class="b_algo"[^>]*><h2><a\s[^>]*href="(http[^"]+)"\s[^>]*h="([^"]+)"')
-        bp.randomClick(IG_NUMBER_PATTERN, IG_PING_LINK, IG_SEARCHES_PATTERN, "", None, True)
-
-    @patch('bs4.element.Tag.get', return_value = str(PSOUP))
-    @patch('bs4.element.Tag.find', return_value = PSOUP)
-    @patch('bingDashboardParser.foundText', new=Mock(side_effect=[True, False]))
-    def test_bdp_quiz_full(self, mocksoap, mockget):
-        bdp.appendQuizReward([], bingCommon.ACCOUNT_URL, PSOUP)
-
-    @patch('bs4.element.Tag.get', return_value = str(PSOUP))
-    @patch('bs4.element.Tag.find', new=Mock(side_effect=[PSOUP, PSOUP, None, PSOUP, PSOUP, PSOUP]))
-    @patch('bingDashboardParser.foundText', new=Mock(side_effect=[True, False]))
-    def test_bdp_quiz_partial(self, mockget):
-        bdp.appendQuizReward([], bingCommon.ACCOUNT_URL, PSOUP)
 
     @patch('bingDashboardParser.Reward.progressPercentage', return_value="100")
     @patch('helpers.getResponseBody')
