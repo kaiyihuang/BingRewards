@@ -372,8 +372,6 @@ class Config:
             r = int(rhs)
         except ValueError:
             raise ConfigError("EVENTS.{RETRY|NOTIFY}.IF is invalid - _rhs_ can not be parsed as int")
-        if float(r) != float(rhs):
-            raise ConfigError("EVENTS.{RETRY|NOTIFY}.IF is invalid - _rhs_ MUST be int")
 
         # op
         if op not in Config.Event.IfStatement.Ops:
