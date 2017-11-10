@@ -17,8 +17,6 @@
           steps:
             - name: files
               command: ls -al /usr/src/app
-            - name: results
-              command: /bin/true || mkdir /src/result 
             - name: check result
               command: ls -al /src/
             - name: main test
@@ -30,6 +28,8 @@
   tags: tests
   service: bing-test
   steps:
+    - name: results
+      command: bash -c "/bin/true || mkdir /src/result"
     - name: decrypt and run
       command: bash -c "cd /src && openssl aes-256-cbc -d -in config.xml.encrypted.1 -k ${KEY} -out config.xml"
     - name: unittests
