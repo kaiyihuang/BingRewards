@@ -13,9 +13,9 @@ RUN apt-get upgrade -y
 RUN apt-get install -y python-pip
 RUN pip install --upgrade pip
 COPY . /usr/src/app
-RUN /bin/true || mkdir -p /usr/src/app/result
 RUN find . -iname \*pyc -exec rm {} \;
 WORKDIR /usr/src/app
+RUN rm -rf .[gi]*
 RUN cp config.xml.dist config.xml
 RUN chmod og-r config.xml
 RUN pip install -r requirements.txt
