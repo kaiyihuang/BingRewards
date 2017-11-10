@@ -28,8 +28,6 @@
   steps:
     - name: decrypt and run
       command: bash -c "cd /src && openssl aes-256-cbc -d -in config.xml.encrypted.1 -k ${KEY} -out config.xml"
-    - name: create result 
-      command: bash -c "cd /src && /bin/true || mkdir result 2> /dev/null"
     - name: unittests
       command: bash -c "cd /src && nosetests -v --processes=4 --process-timeout=120 -c nose.config test/*.py"
     - name: reports

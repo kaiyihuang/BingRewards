@@ -13,6 +13,7 @@ RUN apt-get upgrade -y
 RUN apt-get install -y python-pip
 RUN pip install --upgrade pip
 COPY . /usr/src/app
+ADD result /usr/src/app/result/
 RUN find . -iname \*pyc -exec rm {} \;
 WORKDIR /usr/src/app
 RUN cp config.xml.dist config.xml
