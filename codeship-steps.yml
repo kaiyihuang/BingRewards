@@ -28,6 +28,8 @@
   steps:
     - name: results
       command: bash -c "/bin/true || mkdir /src/result"
+    - name: check dir 
+      command: bash -c "ls -aRl /src"
     - name: decrypt and run
       command: bash -c "cd /src && openssl aes-256-cbc -d -in config.xml.encrypted.1 -k ${KEY} -out config.xml"
     - name: unittests
