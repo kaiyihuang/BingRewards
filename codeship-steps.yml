@@ -17,8 +17,6 @@
           steps:
             - name: files
               command: ls -al /usr/src/app
-            - name: check result
-              command: ls -al /src/
             - name: main test
               command: python /usr/src/app/main.py -h
 
