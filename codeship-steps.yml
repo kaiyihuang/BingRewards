@@ -1,4 +1,5 @@
 # initial checkin
+# ie:  coverage erase; docker rm -f jet-bing-test-reports|| jet steps
 - name: bing serial
   type: serial
   tags: master
@@ -26,14 +27,17 @@
   service: bing-test
   steps:
     - name: decrypt and run
-      command: bash -c "cd /src; openssl aes-256-cbc -d -in config.xml.encrypted.1 -k ${KEY} -out config.xml"
+      command: bash -c "cd /src && openssl aes-256-cbc -d -in config.xml.encrypted.1 -k ${KEY} -out config.xml"
     - name: unittests
-      command: bash -c "cd /src && nosetests -v --processes=4 --process-timeout=120 --with-coverage --cover-package pkg --cover-package test --cover-package . test/*.py"
+      command: bash -c "cd /src && nosetests -v --processes=4 --process-timeout=120 -c nose.config test/*.py"
     - name: reports
-      command: bash -c "cd /src; mv .coverage .coverage.1 && coverage run -p ./mpmain.py 4 config.xml"
+      command: bash -c "cd /src && mv .coverage .coverage.1 && coverage run ./mpmain.py 4 config.xml"
+    - name: cov files
+      command: bash -c "ls -al /src/.co*"
     - name: coveralls
-      command: bash -c "cd /src; coverage combine && coverage report && coveralls --rcfile=/usr/src/app/.coveragerc"
-
+      command: bash -c "cd /src && coverage combine --debug data && coverage report --omit 'mpmain.py,pkg,pkg/queryGenerator' --debug data && coveralls --rcfile=/usr/src/app/.coveragerc"
+    - name: cov files after
+      command: bash -c "ls -al /src/.co*"
 #  - name: Test dockercfg Generator
 #    service: dockercfg_test
 #    type: push
