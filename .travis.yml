@@ -1,4 +1,5 @@
 language: python
+os: osx
 dist: trusty
 sudo: false
 cache: pip
