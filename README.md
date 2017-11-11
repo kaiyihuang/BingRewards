@@ -1,6 +1,6 @@
 # BingRewards
 
-## CircleCI (L:Precise), TravisCI (L:Trusty) Coverage, Container, Pyup, Python, CodeClimate badges
+## CircleCI (L:Precise), TravisCI (L:Trusty), Coverall, Container, Pyup, Python, CodeClimate badges
 [![CircleCI](https://circleci.com/gh/kenneyhe/BingRewards/tree/master.svg?style=svg)](https://circleci.com/gh/kenneyhe/BingRewards/tree/master)
 [![Build Status](https://travis-ci.org/kenneyhe/BingRewards.svg?branch=master)](https://travis-ci.org/kenneyhe/BingRewards)
 [![Coverage Status](https://coveralls.io/repos/github/kenneyhe/BingRewards/badge.svg?branch=master)](https://coveralls.io/github/kenneyhe/BingRewards?branch=master) 
