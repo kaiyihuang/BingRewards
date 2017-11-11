@@ -1,10 +1,13 @@
 # BingRewards
 
-## CircleCI (Linux Precise), Travis (Linux Trusty) Coverage, Container, Python safety badges
+## CircleCI (L:Precise), TravisCI (L:Trusty) Coverage, Container, Pyup, Python, CodeClimate badges
 [![CircleCI](https://circleci.com/gh/kenneyhe/BingRewards/tree/master.svg?style=svg)](https://circleci.com/gh/kenneyhe/BingRewards/tree/master)
 [![Build Status](https://travis-ci.org/kenneyhe/BingRewards.svg?branch=master)](https://travis-ci.org/kenneyhe/BingRewards)
-[![Coverage Status](https://coveralls.io/repos/github/kenneyhe/BingRewards/badge.svg?branch=master)](https://coveralls.io/github/kenneyhe/BingRewards?branch=master) [![Codeship Status for kenneyhe/BingRewards](https://app.codeship.com/projects/b7d1b790-7558-0135-7442-16f51719268d/status?branch=master)](https://app.codeship.com/projects/244218) [![Updates](https://pyup.io/repos/github/kenneyhe/BingRewards/shield.svg)](https://pyup.io/repos/github/kenneyhe/BingRewards/) [![Python 3](https://pyup.io/repos/github/kenneyhe/BingRewards/python-3-shield.svg)](https://pyup.io/repos/github/kenneyhe/BingRewards/)
-
+[![Coverage Status](https://coveralls.io/repos/github/kenneyhe/BingRewards/badge.svg?branch=master)](https://coveralls.io/github/kenneyhe/BingRewards?branch=master) 
+[![Codeship Status for kenneyhe/BingRewards](https://app.codeship.com/projects/b7d1b790-7558-0135-7442-16f51719268d/status?branch=master)](https://app.codeship.com/projects/244218) 
+[![Updates](https://pyup.io/repos/github/kenneyhe/BingRewards/shield.svg)](https://pyup.io/repos/github/kenneyhe/BingRewards/) 
+[![Python 3](https://pyup.io/repos/github/kenneyhe/BingRewards/python-3-shield.svg)](https://pyup.io/repos/github/kenneyhe/BingRewards/)
+[![Maintainability](https://api.codeclimate.com/v1/badges/5feebb4f1c602e863322/maintainability)](https://codeclimate.com/github/kenneyhe/BingRewards/maintainability)
 
 ## About
 BingRewards is an automated point earning script that works with Bing.com to earn points that can be redeemed for giftcards.
