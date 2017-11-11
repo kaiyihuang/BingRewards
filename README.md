@@ -1,6 +1,7 @@
 # BingRewards
 
-## Coverage Badge, Container Badge, Python safety badge
+## CircleCI (Linux), Coverage, Container, Python safety badges
+[![CircleCI](https://circleci.com/gh/kenneyhe/BingRewards/tree/master.svg?style=svg)](https://circleci.com/gh/kenneyhe/BingRewards/tree/master)
 [![Coverage Status](https://coveralls.io/repos/github/kenneyhe/BingRewards/badge.svg?branch=master)](https://coveralls.io/github/kenneyhe/BingRewards?branch=master) [![Codeship Status for kenneyhe/BingRewards](https://app.codeship.com/projects/b7d1b790-7558-0135-7442-16f51719268d/status?branch=master)](https://app.codeship.com/projects/244218) [![Updates](https://pyup.io/repos/github/kenneyhe/BingRewards/shield.svg)](https://pyup.io/repos/github/kenneyhe/BingRewards/) [![Python 3](https://pyup.io/repos/github/kenneyhe/BingRewards/python-3-shield.svg)](https://pyup.io/repos/github/kenneyhe/BingRewards/)
 
 
