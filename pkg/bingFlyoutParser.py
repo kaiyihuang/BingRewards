@@ -178,10 +178,9 @@ class __HTMLRewardsParser(HTMLParser.HTMLParser): # pragma: no cover
                     if self.step == self.ParsingStep.DIV_CONTENT:
                         self.step = self.ParsingStep.DIV_STATUSBAR
                 elif attr[1] == 'message':
-                    if self.step == self.ParsingStep.SPAN_PROGRESS or \
-                        self.step == self.ParsingStep.A_REWARD_URL or \
-                        self.step == self.ParsingStep.SPAN_TITLE:
-                            self.step = self.ParsingStep.DIV_MESSAGE
+                    if self.step == self.ParsingStep.SPAN_PROGRESS or self.step == self.ParsingStep.A_REWARD_URL \
+                            or self.step == self.ParsingStep.SPAN_TITLE:
+                        self.step = self.ParsingStep.DIV_MESSAGE
                     elif self.step == self.ParsingStep.SPAN_PROGRESS_YG:
                         self.step = self.ParsingStep.DIV_MESSAGE_YG
                 elif attr[1] == 'redeemgoal':
@@ -202,9 +201,8 @@ class __HTMLRewardsParser(HTMLParser.HTMLParser): # pragma: no cover
                     if self.step == self.ParsingStep.DIV_STATUSBAR:
                         self.step = self.ParsingStep.SPAN_TITLE
                 elif attr[1] == 'progress':
-                    if self.step == self.ParsingStep.SPAN_TITLE or \
-                        self.step == self.ParsingStep.A_REWARD_URL:
-                            self.step = self.ParsingStep.SPAN_PROGRESS
+                    if self.step == self.ParsingStep.SPAN_TITLE or self.step == self.ParsingStep.A_REWARD_URL:
+                        self.step = self.ParsingStep.SPAN_PROGRESS
                     elif self.step == self.ParsingStep.A_GOALLINK:
                         self.step = self.ParsingStep.SPAN_PROGRESS_YG
             return
@@ -221,9 +219,8 @@ class __HTMLRewardsParser(HTMLParser.HTMLParser): # pragma: no cover
     def handle_endtag(self, tag):
         if tag == 'ul':
 # add self.bing_url prefix to the reward's url if needed
-            if self.reward.url != "":
-                if self.reward.url.startswith("/"):
-                    self.reward.url = self.bing_url + self.reward.url
+            if self.reward.url != "" and self.reward.url.startswith("/"):
+                self.reward.url = self.bing_url + self.reward.url
             self.assignRewardType()
 # append the reward to the list of rewards
             self.rewards.append(self.reward)
