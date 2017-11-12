@@ -160,48 +160,55 @@ class __HTMLRewardsParser(HTMLParser.HTMLParser): # pragma: no cover
     def handle_starttag(self, tag, attrs):
         if tag == 'ul':
             self.reward = Reward()
-        elif tag == 'li':
+            return
+        if tag == 'li':
             for attr in attrs:
                 if attr[0] == 'class' and attr[1] == 'main':
                     self.step = self.ParsingStep.LI_MAIN
-        elif tag == 'div':
+            return
+
+        if tag == 'div':
             for attr in attrs:
-                if attr[0] == 'class':
-                    if attr[1] == 'content':
-                        if self.step == self.ParsingStep.LI_MAIN:
-                            self.step = self.ParsingStep.DIV_CONTENT
-                    elif attr[1] == 'statusbar':
-                        if self.step == self.ParsingStep.DIV_CONTENT:
-                            self.step = self.ParsingStep.DIV_STATUSBAR
-                    elif attr[1] == 'message':
-                        if self.step == self.ParsingStep.SPAN_PROGRESS or \
-                            self.step == self.ParsingStep.A_REWARD_URL or \
-                            self.step == self.ParsingStep.SPAN_TITLE:
-                                self.step = self.ParsingStep.DIV_MESSAGE
-                        elif self.step == self.ParsingStep.SPAN_PROGRESS_YG:
-                            self.step = self.ParsingStep.DIV_MESSAGE_YG
-                    elif attr[1] == 'redeemgoal':
-                        if self.step == self.ParsingStep.DIV_CONTENT:
-                            self.step = self.ParsingStep.DIV_REDEEMGOAL
-                    elif attr[1] == 'status':
-                        if self.step == self.ParsingStep.DIV_REDEEMGOAL:
-                            self.step = self.ParsingStep.DIV_STATUS
-                    elif attr[1] == 'text':
-                        if self.step == self.ParsingStep.DIV_MESSAGE_YG:
-                            self.step = self.ParsingStep.DIV_TEXT_YG
-        elif tag == 'span':
+                if attr[0] != 'class':
+                    return
+                if attr[1] == 'content':
+                    if self.step == self.ParsingStep.LI_MAIN:
+                        self.step = self.ParsingStep.DIV_CONTENT
+                elif attr[1] == 'statusbar':
+                    if self.step == self.ParsingStep.DIV_CONTENT:
+                        self.step = self.ParsingStep.DIV_STATUSBAR
+                elif attr[1] == 'message':
+                    if self.step == self.ParsingStep.SPAN_PROGRESS or \
+                        self.step == self.ParsingStep.A_REWARD_URL or \
+                        self.step == self.ParsingStep.SPAN_TITLE:
+                            self.step = self.ParsingStep.DIV_MESSAGE
+                    elif self.step == self.ParsingStep.SPAN_PROGRESS_YG:
+                        self.step = self.ParsingStep.DIV_MESSAGE_YG
+                elif attr[1] == 'redeemgoal':
+                    if self.step == self.ParsingStep.DIV_CONTENT:
+                        self.step = self.ParsingStep.DIV_REDEEMGOAL
+                elif attr[1] == 'status':
+                    if self.step == self.ParsingStep.DIV_REDEEMGOAL:
+                        self.step = self.ParsingStep.DIV_STATUS
+                elif attr[1] == 'text':
+                    if self.step == self.ParsingStep.DIV_MESSAGE_YG:
+                        self.step = self.ParsingStep.DIV_TEXT_YG
+            return
+        if tag == 'span':
             for attr in attrs:
-                if attr[0] == 'class':
-                    if attr[1] == 'title':
-                        if self.step == self.ParsingStep.DIV_STATUSBAR:
-                            self.step = self.ParsingStep.SPAN_TITLE
-                    elif attr[1] == 'progress':
-                        if self.step == self.ParsingStep.SPAN_TITLE or \
-                            self.step == self.ParsingStep.A_REWARD_URL:
-                                self.step = self.ParsingStep.SPAN_PROGRESS
-                        elif self.step == self.ParsingStep.A_GOALLINK:
-                            self.step = self.ParsingStep.SPAN_PROGRESS_YG
-        elif tag == 'a':
+                if attr[0] != 'class':
+                    return
+                if attr[1] == 'title':
+                    if self.step == self.ParsingStep.DIV_STATUSBAR:
+                        self.step = self.ParsingStep.SPAN_TITLE
+                elif attr[1] == 'progress':
+                    if self.step == self.ParsingStep.SPAN_TITLE or \
+                        self.step == self.ParsingStep.A_REWARD_URL:
+                            self.step = self.ParsingStep.SPAN_PROGRESS
+                    elif self.step == self.ParsingStep.A_GOALLINK:
+                        self.step = self.ParsingStep.SPAN_PROGRESS_YG
+            return
+        if tag == 'a':
             if self.step == self.ParsingStep.SPAN_TITLE:
                 self.step = self.ParsingStep.A_REWARD_URL
                 for attr in attrs:
@@ -209,6 +216,7 @@ class __HTMLRewardsParser(HTMLParser.HTMLParser): # pragma: no cover
                         self.reward.url = attr[1].strip()
             elif self.step == self.ParsingStep.DIV_STATUS:
                 self.step = self.ParsingStep.A_GOALLINK
+            return
 
     def handle_endtag(self, tag):
         if tag == 'ul':
@@ -223,8 +231,7 @@ class __HTMLRewardsParser(HTMLParser.HTMLParser): # pragma: no cover
 
     def handle_data(self, data):
         if self.step == self.ParsingStep.SPAN_TITLE:
-            if data.lower() == 'maintain gold':
-                if self.reward.name == "":
+            if data.lower() == 'maintain gold' and self.reward.name == "":
                     self.reward.name = data.strip()
         elif self.step == self.ParsingStep.A_REWARD_URL:
             if self.reward.name == "":
@@ -236,8 +243,7 @@ class __HTMLRewardsParser(HTMLParser.HTMLParser): # pragma: no cover
                     self.reward.isDone = True
                 else:
                     progress = data.strip().split(' of ', 1)
-                    self.reward.progressCurrent = int(progress[0])
-                    self.reward.progressMax = int(progress[1].split()[0])
+                    self.reward.progressCurrent, self.reward.progressMax = int(progress[0]), int(progress[1].split()[0])
         elif self.step == self.ParsingStep.DIV_MESSAGE:
 # if '<a ' tag exists - that's probably the last tag - get rid of it
             if self.reward.description == "":
