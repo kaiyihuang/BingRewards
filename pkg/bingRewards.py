@@ -420,11 +420,21 @@ class BingRewards:
 
         i = 0
         total = len(rewards)
-        for r in rewards:
+        self.printheader(rewards, total)
+
+    def printheader(self, list, total):
+        i = 0
+        isreward = isinstance(list[0], bfp.RewardV1) or isinstance(list[0], bdp.Reward)
+        for r in list:
             i += 1
-            print "Reward %d/%d:" % (i, total)
-            print "-----------"
-            self.__printReward(r)
+            if isreward:
+                print "Reward %d/%d:" % (i, total)
+                print "-----------"
+                self.__printReward(r)
+            else:
+                print "Result %d/%d:" % (i, total)
+                print "-----------"
+                self.__printResult(r)
             print
 
     def __printResult(self, result):
@@ -444,17 +454,12 @@ class BingRewards:
         if results is None or not isinstance(results, list):
             raise TypeError("results is not an instance of list")
 
-        i = 0
-        total = 0
+        total = self.printresult(results, 0, verbose)
+        self.printheader(results, total)
 
+    def printresult(self, results, total, verbose):
         for r in results:
             if verbose or r.isError:
                 total += 1
                 print r.message
-        for r in results:
-            if verbose or r.isError:
-                i += 1
-                print "Result %d/%d:" % (i, total)
-                print "-----------"
-                self.__printResult(r)
-                print
+        return total
