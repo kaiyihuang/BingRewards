@@ -111,10 +111,7 @@ class BingRewards:
         url = "https://account.microsoft.com/rewards/dashboard"
         request = urllib2.Request(url = url, headers = self.httpHeaders)
         request.add_header("Referer", bingCommon.BING_URL)
-        with self.opener.open(request) as response:
-            referer = response.geturl()
-            page = helpers.getResponseBody(response)
-
+        page, referer = helpers.getResponses(self, request)
         #If we have already gone through the sign in process once, we don't need to do it again, just return the page
         if page.find('JavaScript required to sign in') == -1:
             return page
