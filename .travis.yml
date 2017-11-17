@@ -17,6 +17,6 @@ before_script:
 script: nosetests -v  --processes=4 --process-timeout=200 -c nose.config test/*.py
 
 after_success:
-  - mpmain.py 6 config.xml
+  - python mpmain.py 6 config.xml
   - coverage report --omit '/home/travis/*'
   #- coveralls
