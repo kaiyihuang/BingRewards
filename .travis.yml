@@ -8,7 +8,6 @@ env:
   - TOXENV=py27
   - TOXENV=py34
   - TOXENV=py36
-  - CODECLIMATE_REPO_TOKEN=b1bfad9809ef8b3be1eefa761352840a5ea632ef8bff0981fe295d61f9e2af84
 
 before_script:
   - pip install -r test/requirements.txt
@@ -17,6 +16,6 @@ before_script:
 script: nosetests -v  --processes=4 --process-timeout=200 -c nose.config test/*.py
 
 after_success:
-  - python mpmain.py 6 config.xml
+  - travis_wait 120 python mpmain.py 6 config.xml
   - coverage report --omit '/home/travis/*'
   #- coveralls
