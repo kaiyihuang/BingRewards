@@ -63,7 +63,7 @@ onScriptFailure: A special event which occurs only once and if the script fails 
 
 ## Automating
 FAAS support
-```python
+```bash
 
 # openfaas deploying swarm and server at http://localhost:8080
 docker swarm init
@@ -84,9 +84,7 @@ docker service ls
 openssl aes-256-cbc -e -in config.xml -k "${KEY}" | openssl enc -base64 > ~/config.enc
 curl http://localhost:8080/function/bing --data-binary @$HOME/config.enc > output.txt
 
-# test containers
-``` bash
-# send it to codeship
+# test containers before heading to codeship
 jet steps
 ```
 
