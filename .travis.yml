@@ -14,6 +14,6 @@ before_script:
 script: nosetests -v  --processes=4 --process-timeout=200 -c nose.config test/*.py
 
 after_success:
-  - travis_wait 120 python mpmain.py 3 config.xml
+  - travis_wait 120 sleep infinity & python mpmain.py 3 config.xml
   - coverage report --omit '/home/travis/*'
   #- coveralls
