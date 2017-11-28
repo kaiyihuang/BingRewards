@@ -718,8 +718,8 @@ class TestConfig(unittest.TestCase):
         helpers.createResultsDir("none")
         self.assertEqual(os.path.isdir(helpers.RESULTS_DIR), True, "missing directory " + helpers.RESULTS_DIR)
 
-    @patch('os.path.dirname', new=Mock(side_effect=OSError("fail to mock a write", errno.EACCES)))
-    def test_createdir_raise(self):
+    @patch('os.makedirs', new=Mock(side_effect=OSError("fail to mock a write", errno.EACCES)))
+    def test_createdir_raise (self):
         """
          test dir raise error
          :return:
@@ -765,6 +765,16 @@ class TestConfig(unittest.TestCase):
         # should raise if it sees an assertion
         self.assertRaisesRegexp(helpers.BingAccountError, "Invalid", helpers.errorOnText, 'That password is incorrect.',
                                 'That password is incorrect.', err)
+
+    @patch('urllib.addinfourl.info', return_value = {"Content-Encoding": "deflate"})
+    def test_response(self, mockinfo):
+        """
+        test helper response decoding error
+        :return:
+        """
+        import zlib
+        response = urllib2.urlopen('http://www.bing.com/')
+        self.assertRaisesRegexp(zlib.error, "Error -3", helpers.getResponseBody, response)
 
     def test_node(self):
         """
@@ -835,7 +845,6 @@ class TestConfig(unittest.TestCase):
         # check type err
         self.assertRaisesRegexp(TypeError, "not supported", parseResultsArea1, bingHistory)
         self.assertRaisesRegexp(TypeError, "not supported", parseResultsArea2, bingHistory)
-
 
     @patch('helpers.getResponseBody', return_value='"WindowsLiveId":""     "WindowsLiveId":""')
     @patch('time.sleep', return_value='')
