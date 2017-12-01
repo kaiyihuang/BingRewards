@@ -15,7 +15,6 @@ WORKDIR /usr/src/app/
 EXPOSE 8080
 ENV http_proxy      ""
 ENV https_proxy     ""
-RUN apt-get install -y git
 ADD requirements.txt /usr/src/app/
 ADD https://raw.githubusercontent.com/kenneyhe/BingRewards/master/config.xml.dist /usr/src/app/config.xml
 RUN pip install -r requirements.txt
