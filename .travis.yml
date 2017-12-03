@@ -2,7 +2,9 @@ language: python
 dist: trusty
 sudo: false
 cache: pip
-python: 2.7
+python:
+  - '3.5'
+  - '2.7'
 
 env:
   - TOXENV=py27
@@ -16,6 +18,6 @@ script: nosetests -v  --processes=4 --process-timeout=200 -c nose.config test/*.
 after_success:
   # avoid No output has been received in the last 10m0s.. issue for more output
   #- travis_retry python mpmain.py 6 config.xml
-  - travis_retry python main.py -v -f config.xml
+  - travis_wait 120 python main.py -v -f config.xml
   - coverage report --omit '/home/travis/*'
   #- coveralls
