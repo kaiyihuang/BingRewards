@@ -3,8 +3,9 @@ dist: trusty
 sudo: false
 cache: pip
 python:
-  - '3.5'
   - '2.7'
+  # not happy with nose.cfg, so use --cover-package
+  - '3.5' 
 
 env:
   - TOXENV=py27
@@ -13,7 +14,7 @@ before_script:
   - pip install -r test/requirements.txt
   - openssl aes-256-cbc -d -in config.xml.encrypted.1 -k ${KEY} -out config.xml
 
-script: nosetests -v  --processes=4 --process-timeout=200 -c nose.config test/*.py
+script: nosetests -v  --processes=4 --process-timeout=200 --with-coverage --cover-package pkg --cover-package pkg/queryGenerators --cover-package test --cover-package .  test/*.py
 
 after_success:
   # avoid No output has been received in the last 10m0s.. issue for more output
