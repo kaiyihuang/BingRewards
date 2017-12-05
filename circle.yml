@@ -14,7 +14,7 @@ dependencies:
     # - vnc4server -geometry 1280x1024 -depth 24
     # if need to syncup with upstream: https://gist.github.com/Chaser324/ce0505fbed06b947d962
     - pip install --upgrade pip 
-    - openssl aes-256-cbc -d -in config.xml.encrypted -k "${KEY}" >> config.xml
+    - openssl aes-256-cbc -d -in config.xml.encrypted.1 -k "${AES}" > config.xml.1
     - chmod og-r config.xml
     - pip install -r requirements.txt
 
@@ -37,7 +37,7 @@ test:
     - nosetests -v  --processes=4 --process-timeout=200 --with-coverage --cover-package pkg --cover-package pkg/queryGenerators --cover-package test --cover-package . --cover-package pkg/queryGenerators test/*.py:
           parallel: false
     - mv .coverage .coverage.1
-    - coverage run --omit '/home/ubuntu/*/*/*/*,/usr/*' -p mpmain.py 3
+    - coverage run --omit '/home/ubuntu/*/*/*/*,/usr/*' -p mpmain.py 3 config.xml.1
     - ls -aRl .coverage*
     # combine with two processes running coverage seems broken
     - coverage combine
