@@ -15,7 +15,7 @@ dependencies:
     # if need to syncup with upstream: https://gist.github.com/Chaser324/ce0505fbed06b947d962
     - pip install --upgrade pip 
     - openssl aes-256-cbc -d -in config.xml.encrypted.1 -k "${AES}" > config.xml.1
-    - chmod og-r config.xml
+    - chmod og-r config.xml.1
     - pip install -r requirements.txt
 
   post:
@@ -43,7 +43,7 @@ test:
     - coverage combine
 
   post:
-    - rm -f config.xml
+    - rm -f config.xml.1
 
 deployment:
   production:
