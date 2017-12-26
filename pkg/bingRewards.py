@@ -94,14 +94,19 @@ class BingRewards:
 
     def getLifetimeCredits(self):
         page = self.getDashboardPage()
-
+        #Figure out which version of the rewards page we're on
+        if page.find("rewards-oneuidashboard") != -1:
+            block = page.split("var dashboard")[1]
+            return int(block[block.index('"lifetimePoints"'):].split(',')[0].split(':')[1])
+        else:
         # find lifetime points
-        s = page.find(' lifetime points</div>') - 20
-        s = page.find('>', s) + 1
-        e = page.find(' ', s)
-        points = page[s:e]
-
-        return int(points.replace(",", "")) # remove commas so we can cast as int
+            s = page.find(' lifetime points</div>') - 20
+            s = page.find('>', s) + 1
+            e = page.find(' ', s)
+            points = page[s:e]
+            return int(points.replace(",", "")) # remove commas so we can cast as int
+        #should never happen...
+        return 0
 
     def getDashboardPage(self):
         """
@@ -187,9 +192,15 @@ class BingRewards:
         with self.opener.open(request) as response:
             page = helpers.getResponseBody(response)
         pointsEarned = self.getRewardsPoints() - pointsEarned
+        # if HIT is against bdp.Reward.Type.RE_EARN_CREDITS - check if pointsEarned is the same to
+        # pointsExpected
         indCol = bdp.Reward.Type.Col.INDEX
         if reward.tp[indCol] == bdp.Reward.Type.RE_EARN_CREDITS[indCol]:
             pointsExpected = reward.progressMax - reward.progressCurrent
+            if pointsExpected != pointsEarned:
+                filename = helpers.dumpErrorPage(page)
+                res.isError, res.message = True, "Expected to earn " + str(pointsExpected) + " points, but earned " + \
+                              str(pointsEarned) + " points. Check " + filename + " for further information"
         return res
 
     def __processWarn(self, reward):
@@ -229,6 +240,8 @@ class BingRewards:
         if reward.isAchieved():
             res.message = "This reward has been already achieved"
             return res
+
+        indCol = bdp.Reward.Type.Col.INDEX
 
 # get a set of queries from today's Bing! history
         url = bingHistory.getBingHistoryTodayURL()
