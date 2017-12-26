@@ -454,7 +454,7 @@ class BingRewards:
         if results is None or not isinstance(results, list):
             raise TypeError("results is not an instance of list")
 
-        total = self.printresult(results, 0, verbose)
+        total = self.printresult(results, len(results), verbose)
         self.printheader(results, total)
 
     def printresult(self, results, total, verbose):
