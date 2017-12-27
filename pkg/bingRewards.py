@@ -94,14 +94,19 @@ class BingRewards:
 
     def getLifetimeCredits(self):
         page = self.getDashboardPage()
-
+        #Figure out which version of the rewards page we're on
+        if page.find("rewards-oneuidashboard") != -1:
+            block = page.split("var dashboard")[1]
+            return int(block[block.index('"lifetimePoints"'):].split(',')[0].split(':')[1])
+        else:
         # find lifetime points
-        s = page.find(' lifetime points</div>') - 20
-        s = page.find('>', s) + 1
-        e = page.find(' ', s)
-        points = page[s:e]
-
-        return int(points.replace(",", "")) # remove commas so we can cast as int
+            s = page.find(' lifetime points</div>') - 20
+            s = page.find('>', s) + 1
+            e = page.find(' ', s)
+            points = page[s:e]
+            return int(points.replace(",", "")) # remove commas so we can cast as int
+        #should never happen...
+        return 0
 
     def getDashboardPage(self):
         """
@@ -111,10 +116,7 @@ class BingRewards:
         url = "https://account.microsoft.com/rewards/dashboard"
         request = urllib2.Request(url = url, headers = self.httpHeaders)
         request.add_header("Referer", bingCommon.BING_URL)
-        with self.opener.open(request) as response:
-            referer = response.geturl()
-            page = helpers.getResponseBody(response)
-
+        page, referer = helpers.getResponses(self, request)
         #If we have already gone through the sign in process once, we don't need to do it again, just return the page
         if page.find('JavaScript required to sign in') == -1:
             return page
@@ -190,9 +192,15 @@ class BingRewards:
         with self.opener.open(request) as response:
             page = helpers.getResponseBody(response)
         pointsEarned = self.getRewardsPoints() - pointsEarned
+        # if HIT is against bdp.Reward.Type.RE_EARN_CREDITS - check if pointsEarned is the same to
+        # pointsExpected
         indCol = bdp.Reward.Type.Col.INDEX
         if reward.tp[indCol] == bdp.Reward.Type.RE_EARN_CREDITS[indCol]:
             pointsExpected = reward.progressMax - reward.progressCurrent
+            if pointsExpected != pointsEarned:
+                filename = helpers.dumpErrorPage(page)
+                res.isError, res.message = True, "Expected to earn " + str(pointsExpected) + " points, but earned " + \
+                              str(pointsEarned) + " points. Check " + filename + " for further information"
         return res
 
     def __processWarn(self, reward):
@@ -232,6 +240,8 @@ class BingRewards:
         if reward.isAchieved():
             res.message = "This reward has been already achieved"
             return res
+
+        indCol = bdp.Reward.Type.Col.INDEX
 
 # get a set of queries from today's Bing! history
         url = bingHistory.getBingHistoryTodayURL()
@@ -423,11 +433,21 @@ class BingRewards:
 
         i = 0
         total = len(rewards)
-        for r in rewards:
+        self.printheader(rewards, total)
+
+    def printheader(self, list, total):
+        i = 0
+        isreward = isinstance(list[0], bfp.RewardV1) or isinstance(list[0], bdp.Reward)
+        for r in list:
             i += 1
-            print "Reward %d/%d:" % (i, total)
-            print "-----------"
-            self.__printReward(r)
+            if isreward:
+                print "Reward %d/%d:" % (i, total)
+                print "-----------"
+                self.__printReward(r)
+            else:
+                print "Result %d/%d:" % (i, total)
+                print "-----------"
+                self.__printResult(r)
             print
 
     def __printResult(self, result):
@@ -447,17 +467,12 @@ class BingRewards:
         if results is None or not isinstance(results, list):
             raise TypeError("results is not an instance of list")
 
-        i = 0
-        total = 0
+        total = self.printresult(results, len(results), verbose)
+        self.printheader(results, total)
 
+    def printresult(self, results, total, verbose):
         for r in results:
             if verbose or r.isError:
                 total += 1
                 print r.message
-        for r in results:
-            if verbose or r.isError:
-                i += 1
-                print "Result %d/%d:" % (i, total)
-                print "-----------"
-                self.__printResult(r)
-                print
+        return total

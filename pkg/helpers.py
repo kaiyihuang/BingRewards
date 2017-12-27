@@ -52,6 +52,13 @@ def createResultsDir(f):
     RESULTS_DIR = resultsDir
 
 
+def getResponses(obj, request):
+    with obj.opener.open(request) as response:
+        referer = response.geturl()
+        page = getResponseBody(response)
+    return page, referer
+
+
 def getResponseBody(response):
     """ Returns response.read(), but does gzip deflate if appropriate"""
 

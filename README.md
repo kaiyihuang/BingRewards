@@ -1,7 +1,13 @@
 # BingRewards
 
-## Coverage Badge, Container Badge
-[![Coverage Status](https://coveralls.io/repos/github/kenneyhe/BingRewards/badge.svg?branch=mp)](https://coveralls.io/github/kenneyhe/BingRewards?branch=mp) [![Codeship Status for kenneyhe/BingRewards](https://app.codeship.com/projects/b7d1b790-7558-0135-7442-16f51719268d/status?branch=master)](https://app.codeship.com/projects/244218)
+## CircleCI (L:Precise), TravisCI (L:Trusty), Coverall, Container, Pyup, Python, CodeClimate badges
+[![CircleCI](https://circleci.com/gh/kenneyhe/BingRewards/tree/master.svg?style=svg)](https://circleci.com/gh/kenneyhe/BingRewards/tree/master)
+[![Build Status](https://travis-ci.org/kenneyhe/BingRewards.svg?branch=master)](https://travis-ci.org/kenneyhe/BingRewards)
+[![Coverage Status](https://coveralls.io/repos/github/kenneyhe/BingRewards/badge.svg?branch=master)](https://coveralls.io/github/kenneyhe/BingRewards?branch=master)
+[![Codeship Status for kenneyhe/BingRewards](https://app.codeship.com/projects/b7d1b790-7558-0135-7442-16f51719268d/status?branch=master)](https://app.codeship.com/projects/244218)
+[![Updates](https://pyup.io/repos/github/kenneyhe/BingRewards/shield.svg)](https://pyup.io/repos/github/kenneyhe/BingRewards/)
+[![Python 3](https://pyup.io/repos/github/kenneyhe/BingRewards/python-3-shield.svg)](https://pyup.io/repos/github/kenneyhe/BingRewards/)
+[![Maintainability](https://api.codeclimate.com/v1/badges/5feebb4f1c602e863322/maintainability)](https://codeclimate.com/github/kenneyhe/BingRewards/maintainability)
 
 ## About
 BingRewards is an automated point earning script that works with Bing.com to earn points that can be redeemed for giftcards.
@@ -101,7 +107,6 @@ rm -rf faas
 ## References
 - For more information, including how to use this, please, take a look at my blog post:
 [here](http://sealemar.blogspot.com/2012/12/bing-rewards-automation.html)
-- [here](https://github.com/openfaas/faas)
 - To find out how to convert Bing! Rewards points to cash, read my second post in this series:
 [here](http://sealemar.blogspot.com/2013/04/bing-rewards-points-to-cash.html)
 - [Bing! Rewards Automation version 2.0](http://sealemar.blogspot.com/2013/06/bing-rewards-automation-version-2.html)

@@ -65,9 +65,7 @@ class BingAuth:
 
         request = urllib2.Request(url = url, headers = self.httpHeaders)
         request.add_header("Referer", bingCommon.BING_URL)
-        with self.opener.open(request) as response:
-            referer = response.geturl()
-            page = helpers.getResponseBody(response)
+        page, referer = helpers.getResponses(self, request)
 
         # get PPFT parameter
         PPFTSearch = self.ppftValue.search(page)
@@ -141,9 +139,7 @@ class BingAuth:
         # get Passport page
         request = urllib2.Request(url, postFields, self.httpHeaders)
         request.add_header("Referer", referer)
-        with self.opener.open(request) as response:
-            referer = response.geturl()
-            page = helpers.getResponseBody(response)
+        page, referer = helpers.getResponses(self, request)
 
         # Checking for bad usernames and password
         helpers.errorOnText(page, "That password is incorrect.", "Authentication has not been passed: Invalid password")
@@ -166,10 +162,7 @@ class BingAuth:
         # submit continue page
         request = urllib2.Request(url, postFields, self.httpHeaders)
         request.add_header("Referer", referer)
-        with self.opener.open(request) as response:
-            referer = response.geturl()
-            page = helpers.getResponseBody(response)
-
+        page, referer = helpers.getResponses(self, request)
         request = urllib2.Request(url = bingCommon.BING_URL, headers = self.httpHeaders)
         request.add_header("Referer", referer)
         with self.opener.open(request) as response:

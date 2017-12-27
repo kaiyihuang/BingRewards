@@ -1,6 +1,8 @@
 machine:
   python:
     version: 2.7.10
+  environment:
+    CODECLIMATE_REPO_TOKEN: b1bfad9809ef8b3be1eefa761352840a5ea632ef8bff0981fe295d61f9e2af84
 
 dependencies:
   override:
