@@ -3,9 +3,9 @@
 ## CircleCI (L:Precise), TravisCI (L:Trusty), Coverall, Container, Pyup, Python, CodeClimate badges
 [![CircleCI](https://circleci.com/gh/kenneyhe/BingRewards/tree/master.svg?style=svg)](https://circleci.com/gh/kenneyhe/BingRewards/tree/master)
 [![Build Status](https://travis-ci.org/kenneyhe/BingRewards.svg?branch=master)](https://travis-ci.org/kenneyhe/BingRewards)
-[![Coverage Status](https://coveralls.io/repos/github/kenneyhe/BingRewards/badge.svg?branch=master)](https://coveralls.io/github/kenneyhe/BingRewards?branch=master) 
-[![Codeship Status for kenneyhe/BingRewards](https://app.codeship.com/projects/b7d1b790-7558-0135-7442-16f51719268d/status?branch=master)](https://app.codeship.com/projects/244218) 
-[![Updates](https://pyup.io/repos/github/kenneyhe/BingRewards/shield.svg)](https://pyup.io/repos/github/kenneyhe/BingRewards/) 
+[![Coverage Status](https://coveralls.io/repos/github/kenneyhe/BingRewards/badge.svg?branch=master)](https://coveralls.io/github/kenneyhe/BingRewards?branch=master)
+[![Codeship Status for kenneyhe/BingRewards](https://app.codeship.com/projects/b7d1b790-7558-0135-7442-16f51719268d/status?branch=master)](https://app.codeship.com/projects/244218)
+[![Updates](https://pyup.io/repos/github/kenneyhe/BingRewards/shield.svg)](https://pyup.io/repos/github/kenneyhe/BingRewards/)
 [![Python 3](https://pyup.io/repos/github/kenneyhe/BingRewards/python-3-shield.svg)](https://pyup.io/repos/github/kenneyhe/BingRewards/)
 [![Maintainability](https://api.codeclimate.com/v1/badges/5feebb4f1c602e863322/maintainability)](https://codeclimate.com/github/kenneyhe/BingRewards/maintainability)
 
@@ -68,24 +68,41 @@ onScriptComplete: A special event which occurs only once when the script finishe
 onScriptFailure: A special event which occurs only once and if the script fails with exception some time after successfully loading the config.
 
 ## Automating
-Linux/Mac: Create cron job  
-Replace `LOCAL_CONFIG_DIR` setting with the path to your Bing Rewards folder  
-You will also need to update the paths in the command to point to your Bing Rewards folder
-The below cronjob will run at 1 am + random(120 minutes)
-It will save the console output to to a log file
+FAAS support
 ```bash
-SHELL=/bin/bash
-PATH=/usr/bin:$PATH
-LOCAL_CONFIG_DIR=/home/bingrewards/etc
 
-0   1   *   *   *   sleep $(($RANDOM \% 120))m && python2 /home/bingrewards/bin/main.py 2>&1 | gzip > /home/bingrewards/var/log/bingrewards/`date "+\%Y-\%m-\%dT\%H:\%M:\%S"`.log.gz
+# openfaas deploying swarm and server at http://localhost:8080
+docker swarm init
+git clone https://github.com/openfaas/faas && \
+    cd faas && \
+    git checkout 0.6.5 && \
+    ./deploy_stack.sh
+
+# generate image and deploy
+docker build -t kenney/bingreward .
+
+faas-cli deploy -f compose.yml -replace=true
+
+# wait less than a minute for port to be open
+docker service ls
+
+# if not HTTPS
+openssl aes-256-cbc -e -in config.xml -k "${KEY}" | openssl enc -base64 > ~/config.enc
+curl http://localhost:8080/function/bing --data-binary @$HOME/config.enc > output.txt
+
+# test containers before heading to codeship
+jet steps
 ```
-Windows: Use build in Task Scheduler
 
-## Known features not supported
-- Quizzes
-- Level 1 support (but see kenney/mobile project)
-- New User registration
+# create only artifacts
+python -m compileall .
+
+# removal steps
+# function name is service name
+docker service rm bing
+
+# cleanup
+rm -rf faas
 
 ## References
 - For more information, including how to use this, please, take a look at my blog post:

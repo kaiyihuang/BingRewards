@@ -66,35 +66,32 @@
 ENV["VAGRANT_DEFAULT_PROVIDER"] ||= "docker"
 Vagrant.configure(2) do |config|
   config.vm.provider "docker" do |d|
-    d.name = "vagrant-container"
-    d.image = "nishidayuya/docker-vagrant-ubuntu:12.04.5"
+    d.name = "vagrant-mp-container1"
+    d.image = "nishidayuya/docker-vagrant-ubuntu:16.04"
     d.has_ssh = true
   end
 
   # http://activelamp.com/blog/devops/local-docker-development-with-vagrant/
   config.vm.provision "shell", inline: <<-SHELL
     apt-get update
+    apt-get upgrade
     apt-get install -y python-pip
     . ~/.bashrc
     pip install --upgrade pip
     cd /vagrant
-    coverage erase
     cp config.xml.dist config.xml
     chmod og-r config.xml
     pip install -r requirements.txt
     pip install -r test/requirements.txt
-
-    # branch coverage tests
+    coverage erase
     coverage run -p --branch test/rewardtest.py
     coverage run -p --branch test/configtest.py
     # workaround for branch issue arc issue insert here
     while ! coverage combine --debug=trace; do echo "#"; sleep 1; done
     coverage report --omit '/home/ubuntu/*/*/*/*,/usr/*,mpmain.py'
     coverage erase
-
-    # line coverage test
     nosetests -v  --processes=4 --process-timeout=200 --with-coverage --cover-package pkg --cover-package \
-        pkg/queryGenerators --cover-package test --cover-package . --cover-package pkg/queryGenerators test/*.py
+        pkg/queryGenerators --cover-package test --cover-package . test/*.py
     coverage report --omit '/home/ubuntu/*/*/*/*,/usr/*,mpmain.py'
   SHELL
 end

@@ -1,4 +1,4 @@
 [run]
-omit = /home/ubuntu/*/*/*/*,/usr/*,mpmain.py
+omit =pkg,pkg/queryGenerator,test,/usr/local/lib/*
 concurrency = multiprocessing
 parallel = True

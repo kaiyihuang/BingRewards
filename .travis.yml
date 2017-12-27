@@ -12,7 +12,7 @@ env:
 
 before_script:
   - pip install -r test/requirements.txt
-  - cp config.xml.dist config.xml
+  - openssl aes-256-cbc -d -in config.xml.encrypted.1 -k ${KEY} -out config.xml
 
 script: nosetests -v  --processes=4 --process-timeout=200 --with-coverage --cover-package pkg --cover-package pkg/queryGenerators --cover-package test --cover-package . --cover-package pkg/queryGenerators test/*.py
 

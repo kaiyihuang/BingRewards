@@ -112,6 +112,9 @@ def earnRewards(config, httpHeaders, userAgents, reportItem, password):
 
         reportItem.error = e
         print "Connection reset by peer."
+    except AttributeError as e:
+        if "find_all" in str(e):
+            print "could be new account"
 
     except BingAccountError as e:
         reportItem.error = e
