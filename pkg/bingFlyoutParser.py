@@ -50,7 +50,7 @@ class RewardV1:
         RE_EARN_CREDITS_PASS = (1,    EARN_CREDITS_RE,
                             "Get the best of Bing by signing in with Facebook.", True,  Action.PASS)
         RE_EARN_CREDITS      = (2,    EARN_CREDITS_RE,                     None, True,  Action.HIT)
-        SEARCH_MOBILE        = (3,    "Mobile search",                     None, False, Action.SEARCH)
+        SEARCH_MOBILE        = (3,    "Edge mobile search",                None, False, Action.SEARCH) 
         SEARCH_PC            = (4,    "PC search",                         None, False, Action.SEARCH)
         YOUR_GOAL            = (5,    "Your goal",                         None, False, Action.INFORM)
         MAINTAIN_GOLD        = (6,    "Maintain Gold",                     None, False, Action.INFORM)
