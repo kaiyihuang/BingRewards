@@ -29,7 +29,7 @@ test:
     - coverage run -p --branch test/rewardtest.py
     - coverage run -p --branch test/configtest.py
     # workaround for branch issue arc issue
-    - while ! coverage combine --debug=sys,trace; do echo "#"; done
+    # while ! coverage combine --debug=sys,trace; do echo "#"; done
     - coverage report --omit '/home/ubuntu/*/*/*/*,/usr/*,mpmain.py'
     # comment out until coveralls support feature
     # - coveralls --rcfile=.coveragerc
