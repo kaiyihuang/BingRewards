@@ -16,7 +16,7 @@ dependencies:
     # - vnc4server -geometry 1280x1024 -depth 24
     # if need to syncup with upstream: https://gist.github.com/Chaser324/ce0505fbed06b947d962
     - pip install --upgrade pip 
-    - openssl aes-256-cbc -d -in config.xml.encrypted -k "${KEY}" >> config.xml
+    - openssl aes-256-cbc -d -in config.xml.encrypted -k "$dankmemes" >> config.xml
     - chmod og-r config.xml
     - pip install -r requirements.txt
 
