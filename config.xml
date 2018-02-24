@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+
+<configuration>
+    <!--
+    openTopLinkRange looks at the top X results, and randomly clicks one
+    openLinkChance is the chance that a Bing result will be opened
+    Lower the addSearches values if you have three or more accounts
+    If you have one account, an average of 30 extra searches a day is fine
+    If you have 5 accounts, an average of 150 extra searches a day is probably not good
+    -->
+    <general
+        betweenQueriesInterval="1.0"
+        betweenQueriesSalt="3.0"
+        betweenAccountsInterval="3"
+        betweenAccountsSalt="6"
+        openTopLinkRange="5"
+        openLinkChance=".7"
+        addSearchesDesktop="0"
+        addSearchesDesktopSalt="2"
+        addSearchesMobile="0"
+        addSearchesMobileSalt="2" />
+
+    <!--
+    Note: login and password are optional
+        if not set, the proxy is considered open
+        only Basic HTTP Authentication is currently supported
+        protocols: a comma separated list of values - i.e, "http,https"
+    <proxy protocols="http,https" url="218.204.159.45:8123" login="John Smith" password="xxx" />
+    -->
+
+    <!--
+    See config options in the Accounts section of README
+    or view them here: https://github.com/sealemar/BingRewards#accounts
+    -->
+    <accounts>
+        <account type="Live" disabled="false">
+            <login>bdolfbitler@outlook.com</login>
+            <password>Memelover69</password>
+            <ua_browser>![CDATA[Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.10240</ua_browser>
+	    <ua_mobile>![CDATA[Mozilla/5.0 (Linux; Android 8.0; Pixel XL Build/OPP3.170518.006) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.145 Mobile Safari/537.36 EdgA/41.0.0.1273]]</ua_mobile>
+        </account>
+        <account type="Live" disabled="false">
+            <login>unicorn_wong@hotmail.com</login>
+            <password>Gruegood1</password>
+	    <ua_browser>![CDATA[Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.10240</ua_browser>
+	    <ua_mobile>![CDATA[Mozilla/5.0 (Linux; Android 8.0; Pixel XL Build/OPP3.170518.006) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.145 Mobile Safari/537.36 EdgA/41.0.0.1273]]</ua_mobile>
+        </account>
+
+    </accounts>
+
+    <events>
+        <onError>
+            <retry interval="15" salt="13.5" count="3" />
+            <notify cmd="~/BingRewards/notify/onError.sh %a %p %r %P %l %i %e" />
+        </onError>
+        <onComplete>
+            <retry if="%p lt 16" interval="15" salt="13.5" count="3" />
+            <notify if="%l gt 3000"
+                    cmd='/home/BingRewards/bin/BingRewards/notify/onComplete_reached.sh %a %p %r %P %l %i "reached %l Life Credits"' />
+            <notify if="%p ne 16"
+                    cmd="/home/BingRewards/bin/BingRewards/notify/onComplete.sh %a %p %r %P %l %i" />
+            <notify if="%P gt 475"
+                    cmd="/home/BingRewards/bin/BingRewards/notify/onComplete.sh %a %p %r %P %l %i" />
+
+            <account ref="Live_bdolfbitler@outlook.com">
+                <retry if="%p lt 16" interval="15" salt="13.5" count="3" />
+                <notify if="%l gt 750"
+                        cmd='~/BingRewards/notify/onComplete_reached.sh %a %p %r %P %l %i "Gold with %l Life Credits"' />
+                <notify if="%p ne 16"
+                        cmd="~/BingRewards/notify/onComplete.sh %a %p %r %P %l %i" />
+                <notify if="%P gt 475"
+                        cmd="~/BingRewards/notify/onComplete.sh %a %p %r %P %l %i" />
+            </account>
+            <account ref="Live_unicorn_wong@hotmail.com">
+                <retry if="%p lt 16" interval="15" salt="13.5" count="3" />
+                <notify if="%l gt 750"
+                        cmd='~/BingRewards/notify/onComplete_reached.sh %a %p %r %P %l %i "Gold with %l Life Credits"' />
+                <notify if="%p ne 16"
+                        cmd="~/BingRewards/notify/onComplete.sh %a %p %r %P %l %i" />
+                <notify if="%P gt 475"
+                        cmd="~/BingRewards/notify/onComplete.sh %a %p %r %P %l %i" />
+            </account>
+        </onComplete>
+        <onScriptComplete>
+            <notify cmd="~/BingRewards/notify/onScriptComplete.sh -mail" />
+        </onScriptComplete>
+        <onScriptFailure>
+            <notify cmd="~/BingRewards/notify/onScriptFailure.sh -mail" />
+        </onScriptFailure>
+    </events>
+
+    <!--
+    generator="MODULE" must be a module in pkg/queryGenerators
+    current modules:
+        bing - uses today's bing news page. Generates terms which may be partial words.
+        wikipedia - uses today's wikipedia. Generates terms with whole words.
+        googleTrends - uses today's google trends, and google suggested searches. This generator
+                       generates whole words, generally consistent with a search syntax.  These terms
+                       are anything trending and can be NSFW or terms for illegal items.
+    -->
+    <queries generator="googleTrends" />
+</configuration>
