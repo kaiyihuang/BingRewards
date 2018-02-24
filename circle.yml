@@ -2,7 +2,7 @@ machine:
   python:
     version: 2.7.10
   environment:
-    CODECLIMATE_REPO_TOKEN: b1bfad9809ef8b3be1eefa761352840a5ea632ef8bff0981fe295d61f9e2af84
+    CODECLIMATE_REPO_TOKEN: 5662f8dd5f8ebbdf1381427a0c96462125aeccdc
 
 dependencies:
   override:
@@ -16,7 +16,7 @@ dependencies:
     # - vnc4server -geometry 1280x1024 -depth 24
     # if need to syncup with upstream: https://gist.github.com/Chaser324/ce0505fbed06b947d962
     - pip install --upgrade pip 
-    - openssl aes-256-cbc -d -in config.xml.encrypted -k "$KEY" >> config.xml
+    - openssl aes-256-cbc -d -in config.xml.encrypted -k "${KEY}" >> config.xml
     - chmod og-r config.xml
     - pip install -r requirements.txt
 
@@ -29,7 +29,7 @@ test:
     - coverage run -p --branch test/rewardtest.py
     - coverage run -p --branch test/configtest.py
     # workaround for branch issue arc issue
-    # while ! coverage combine --debug=sys,trace; do echo "#"; done
+    - while coverage combine --debug=sys,trace; do echo "#"; done
     - coverage report --omit '/home/ubuntu/*/*/*/*,/usr/*,mpmain.py'
     # comment out until coveralls support feature
     # - coveralls --rcfile=.coveragerc
